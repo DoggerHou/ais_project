@@ -1,3 +1,30 @@
+// Изменяет изображения при нажатии на них
+document.addEventListener("DOMContentLoaded", () => {
+    const imageToggles = [
+        {
+            id: "artem",
+            image1: document.getElementById("artem").getAttribute("data-image-1"),
+            image2: document.getElementById("artem").getAttribute("data-image-2"),
+        },
+        {
+            id: "adelina",
+            image1: document.getElementById("adelina").getAttribute("data-image-1"),
+            image2: document.getElementById("adelina").getAttribute("data-image-2"),
+        }
+    ];
+
+    imageToggles.forEach(({ id, image1, image2 }) => {
+        const img = document.getElementById(id);
+        let toggled = false;
+
+        img.addEventListener("click", () => {
+            toggled = !toggled;
+            img.src = toggled ? image2 : image1;
+        });
+    });
+});
+
+
 // Открытие модального окна для выбранного набора данных
 function openModal(fileId, file_name) {
     // Заполняем скрытое поле file_id значением выбранного файла
@@ -96,28 +123,45 @@ document.querySelector('.reports-modal').addEventListener('click', function (e) 
     }
 });
 
-// Изменяет изображения при нажатии на них
-document.addEventListener("DOMContentLoaded", () => {
-    const imageToggles = [
-        {
-            id: "artem",
-            image1: document.getElementById("artem").getAttribute("data-image-1"),
-            image2: document.getElementById("artem").getAttribute("data-image-2"),
-        },
-        {
-            id: "adelina",
-            image1: document.getElementById("adelina").getAttribute("data-image-1"),
-            image2: document.getElementById("adelina").getAttribute("data-image-2"),
+
+// Функция для отображения окна подтверждения удаления
+function confirmDelete(fileId, fileName) {
+    // Создаем и отображаем диалоговое окно с подтверждением
+    const confirmDialog = document.createElement('div');
+    confirmDialog.classList.add('confirm-dialog');
+
+    confirmDialog.innerHTML = `
+        <div class="confirm-dialog-content">
+            <p>Вы уверены? Вместе с файлом будут удалены все отчеты!</p>
+            <button onclick="deleteFile(${fileId}, '${fileName}')" class="confirm-btn">Удалить</button>
+            <button onclick="cancelDelete()" class="cancel-btn">Отменить</button>
+        </div>
+    `;
+    document.body.appendChild(confirmDialog);
+}
+
+// Функция для подтверждения удаления
+function deleteFile(fileId, fileName) {
+    fetch(`/delete_file/${fileId}`, {
+        method: 'DELETE',
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(`Файл ${fileName} и все связанные отчеты успешно удалены!`);
+            location.reload(); // Перезагружаем страницу для обновления списка
+        } else {
+            alert('Ошибка при удалении файла');
         }
-    ];
-
-    imageToggles.forEach(({ id, image1, image2 }) => {
-        const img = document.getElementById(id);
-        let toggled = false;
-
-        img.addEventListener("click", () => {
-            toggled = !toggled;
-            img.src = toggled ? image2 : image1;
-        });
+        document.body.removeChild(document.querySelector('.confirm-dialog')); // Убираем диалог
+    })
+    .catch(error => {
+        console.error('Ошибка при удалении файла:', error);
+        document.body.removeChild(document.querySelector('.confirm-dialog')); // Убираем диалог
     });
-});
+}
+
+// Функция для отмены удаления
+function cancelDelete() {
+    document.body.removeChild(document.querySelector('.confirm-dialog')); // Убираем диалог
+}

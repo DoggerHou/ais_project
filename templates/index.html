@@ -59,9 +59,9 @@
             <div class="file-card" onclick="openModal({{ file.id }}, '{{ file.file_name }}')">
                 <h4>{{ file.file_name }}</h4>
                 <p class="date">{{ file.created_at.strftime('%d %B %Y, %H:%M') }}</p>
-                <button class="view-reports-btn">Создать отчет</button>
+                <button class="delete-report-btn" onclick="confirmDelete({{ file.id }}, '{{ file.file_name }}')">Удалить отчет</button>
             </div>
-            {% end for %}
+            {% endfor %}
         </div>
         {% else %}
         <p>У вас нет загруженных наборов данных.</p>

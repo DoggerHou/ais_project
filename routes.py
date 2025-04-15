@@ -228,6 +228,7 @@ def download_report(report_id):
         return redirect(url_for('index'))
 
 
+# удаление отчета из модального окна
 def delete_report(report_id):
     # Получаем отчет из базы данных
     report = OptimizationReport.query.get(report_id)
@@ -253,3 +254,26 @@ def delete_report(report_id):
     else:
         flash("Отчет не найден", "error")
         return jsonify({"success": False, "error": "Отчет не найден"}), 404
+
+
+# удаление файлов
+def delete_file(file_id):
+    # Получаем файл из базы данных
+    file = DataFile.query.get(file_id)
+
+    if file:
+        # Удаляем все отчеты, связанные с этим файлом
+        reports = OptimizationReport.query.filter_by(file_id=file_id).all()
+        for report in reports:
+            # Удаляем файл отчета из хранилища
+            if os.path.exists(report.report_file_path):
+                os.remove(report.report_file_path)
+            db.session.delete(report)  # Удаляем отчет из базы данных
+
+        # Удаляем файл из базы данных
+        db.session.delete(file)
+        db.session.commit()
+
+        return jsonify({"success": True}), 200
+    else:
+        return jsonify({"success": False, "error": "Файл не найден"}), 404

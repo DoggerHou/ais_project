@@ -1,7 +1,7 @@
 from flask import Flask
 from database import db
 import os
-from routes import index, register, login, about, team, logout, upload_data, generate_report, get_reports, download_report, delete_report
+from routes import index, register, login, about, team, logout, upload_data, generate_report, get_reports, download_report, delete_report, delete_file
 
 
 app = Flask(__name__)
@@ -33,6 +33,7 @@ app.add_url_rule('/generate_report', 'generate_report', generate_report, methods
 app.add_url_rule('/get_reports/<int:file_id>', 'get_reports', get_reports)
 app.add_url_rule('/download_report/<int:report_id>', 'download_report', download_report)
 app.add_url_rule('/delete_report/<int:report_id>', 'delete_report', delete_report, methods=['DELETE'])
+app.add_url_rule('/delete_file/<int:file_id>', 'delete_file', delete_file, methods=['DELETE'])
 
 
 if __name__ == '__main__':

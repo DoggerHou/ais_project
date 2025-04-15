@@ -280,9 +280,10 @@ th {
     color: #555;
 }
 
-.file-card .view-reports-btn {
+/* Стили для кнопки удаления */
+.file-card .delete-report-btn {
     padding: 8px 16px;
-    background-color: #0d6efd;
+    background-color: #dc3545; /* Красный цвет */
     color: white;
     border: none;
     border-radius: 5px;
@@ -291,9 +292,10 @@ th {
     transition: background-color 0.3s ease;
 }
 
-.file-card .view-reports-btn:hover {
-    background-color: #0056b3;
+.file-card .delete-report-btn:hover {
+    background-color: #c82333; /* Темный красный при наведении */
 }
+
 
 /* Модальное окно для отчетов */
 .reports-modal {
@@ -449,4 +451,57 @@ form button {
 
 form button:hover {
     background-color: #0056b3;
+}
+
+
+
+/* Стили для диалогового окна подтверждения */
+.confirm-dialog {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.confirm-dialog-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    width: 300px;
+}
+
+.confirm-btn {
+    padding: 8px 16px;
+    background-color: #dc3545; /* Красный цвет */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-right: 10px;
+}
+
+.confirm-btn:hover {
+    background-color: #c82333;
+}
+
+.cancel-btn {
+    padding: 8px 16px;
+    background-color: #6c757d; /* Серый цвет */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.cancel-btn:hover {
+    background-color: #5a6268;
 }
