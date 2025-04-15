@@ -56,10 +56,10 @@
         <h3>Ваши загруженные наборы данных:</h3>
         <div class="file-cards">
             {% for file in data_files %}
-            <div class="file-card">
+            <div class="file-card" onclick="openModal({{ file.id }})">
                 <h4>{{ file.file_name }}</h4>
-                <p class="date">{{ file.created_at.strftime('%d %B %Y, %H:%M') }}</p> <!-- Форматируем дату -->
-                <button class="view-reports-btn" data-file-id="{{ file.id }}">Просмотр отчетов</button>
+                <p class="date">{{ file.created_at.strftime('%d %B %Y, %H:%M') }}</p>
+                <button class="view-reports-btn">Просмотр отчетов</button>
             </div>
             {% endfor %}
         </div>
@@ -67,41 +67,36 @@
         <p>У вас нет загруженных наборов данных.</p>
         {% endif %}
 
-        <!-- Генерация отчетов -->
-        <h3>Создание отчетов:</h3>
-        <form action="{{ url_for('generate_report') }}" method="POST">
-            <label for="max_inventory">Максимальный уровень запасов:</label>
-            <input type="number" name="max_inventory" value="480" required>
-            <button type="submit">Создать отчет</button>
-        </form>
-
-        <!-- Просмотр отчетов (всплывающее окно) -->
-        {% if reports %}
+        <!-- Просмотр отчетов (модальное окно) -->
         <div class="reports-modal" id="reportsModal">
             <div class="modal-content">
-                <span class="close-btn">&times;</span>
-                <h3>Ваши отчеты:</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Название отчета</th>
-                            <th>Дата создания</th>
-                            <th>Действия</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for report in reports %}
-                        <tr>
-                            <td>{{ report.report_file_name }}</td>
-                            <td>{{ report.created_at }}</td>
-                            <td><a href="{{ url_for('download_report', report_id=report.id) }}">Скачать</a></td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                <div class="modal-header">
+                    <h3>Создание отчета для набора данных</h3>
+                    <form action="{{ url_for('generate_report') }}" method="POST">
+                        <label for="max_inventory">Максимальный уровень запасов:</label>
+                        <input type="number" name="max_inventory" value="480" required>
+                        <button type="submit">Создать отчет</button>
+                    </form>
+                </div>
+
+                <div class="modal-body">
+                    <h3>Ваши отчеты:</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Дата</th>
+                                <th>Размер склада</th>
+                                <th>Финальная стоимость</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reportsList">
+                            <!-- Отчеты будут добавляться через JS -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-        {% endif %}
 
         {% else %}
         <h2>Добро пожаловать! Пожалуйста, войдите в аккаунт или зарегистрируйтесь, чтобы начать.</h2>

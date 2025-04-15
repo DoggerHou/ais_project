@@ -243,6 +243,8 @@ th {
     font-weight: bold;
 }
 
+
+
 /* Стили для карточек с файлами */
 .file-cards {
     display: flex;
@@ -293,13 +295,6 @@ th {
     background-color: #0056b3;
 }
 
-/* Стиль для даты загрузки */
-.date {
-    font-size: 14px;
-    color: #666;
-    font-style: italic;
-}
-
 /* Модальное окно для отчетов */
 .reports-modal {
     display: none;
@@ -323,27 +318,77 @@ th {
     overflow-y: auto;
 }
 
-.reports-modal table {
+/* Стили для верхней части модального окна */
+.modal-header {
+    padding-bottom: 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+.modal-header form {
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-header input {
+    padding: 10px;
+    margin-top: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.modal-header button {
+    padding: 10px;
+    background-color: #0d6efd;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+.modal-header button:hover {
+    background-color: #0056b3;
+}
+
+/* Стили для нижней части модального окна */
+.modal-body {
+    padding-top: 20px;
+}
+
+.modal-body table {
     width: 100%;
     border-collapse: collapse;
 }
 
-.reports-modal th, .reports-modal td {
+.modal-body th, .modal-body td {
     padding: 12px;
     text-align: left;
     border-bottom: 1px solid #ddd;
 }
 
-.reports-modal .close-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 25px;
+.modal-body .download-btn {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 16px;
     cursor: pointer;
-    color: #333;
+    border-radius: 5px;
+    font-size: 14px;
 }
 
-.reports-modal .close-btn:hover {
-    color: #0d6efd;
+.modal-body .download-btn:hover {
+    background-color: #218838;
 }
+
+/* Закрытие модального окна при клике на фон */
+.reports-modal:focus {
+    outline: none;
+}
+
+.reports-modal:hover {
+    cursor: pointer;
+}
+
 
