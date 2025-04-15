@@ -1,52 +1,110 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8"/>
     <title>Главная — Система оптимизации</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 </head>
 <body>
-    <header>
-        <h1>Система оптимизации закупок</h1>
-        <nav>
-            <a href="{{ url_for('index') }}">Главная</a>
-            <a href="{{ url_for('about') }}">О проекте</a>
-            <a href="{{ url_for('team') }}">О нас</a>
-            <a href="{{ url_for('login') }}" class="auth">Войти</a>
-            <a href="{{ url_for('register') }}" class="auth">Регистрация</a>
+<header>
+    <h1>Система оптимизации закупок</h1>
+    <nav>
+        <a href="{{ url_for('index') }}">Главная</a>
+        <a href="{{ url_for('about') }}">О проекте</a>
+        <a href="{{ url_for('team') }}">О нас</a>
+        <a href="{{ url_for('login') }}" class="auth">Войти</a>
+        <a href="{{ url_for('register') }}" class="auth">Регистрация</a>
 
-            {% if session.get('username') %}
-                <!-- Иконка профиля с выпадающим меню -->
-                <div class="profile-dropdown">
-                    <img src="{{ url_for('static', filename='images/profile.jpg') }}" alt="Профиль" class="profile-icon">
-                    <div class="dropdown-content">
-                        <a href="{{ url_for('logout') }}">Выход</a>
-                    </div>
-                </div>
-            {% endif %}
-        </nav>
-    </header>
+        {% if session.get('username') %}
+        <!-- Иконка профиля с выпадающим меню -->
+        <div class="profile-dropdown">
+            <img src="{{ url_for('static', filename='images/profile.jpg') }}" alt="Профиль" class="profile-icon">
+            <div class="dropdown-content">
+                <a href="{{ url_for('logout') }}">Выход</a>
+            </div>
+        </div>
+        {% endif %}
+    </nav>
+</header>
 
-    <main>
-        <section class="intro">
-            {% if session.get('username') %}
-              <h2>Добро пожаловать, {{ session['username'] }}!</h2>
-            {% else %}
-              <h2>Добро пожаловать! Уважаемая Екатерина Юрьевна!!!!!!!!</h2>
-            {% endif %}
-            <p>
-                Вы находитесь на сайте информационной системы, разработанной в рамках проекта по предмету "Администрирование информационных систем". Эта система позволяет оптимизировать закупки товаров с помощью математической модели нелинейного программирования.
-            </p>
-            <p>
-                Чтобы использовать функциональность системы (расчёт оптимального пополнения запасов и просмотр результатов), пожалуйста, войдите в аккаунт или зарегистрируйтесь.
-            </p>
-        </section>
-    </main>
+<main>
+    <section class="intro">
+        {% if session.get('username') %}
+        <h2>Добро пожаловать, {{ session['username'] }}!</h2>
+        <p>Вы находитесь на сайте информационной системы, которая поможет вам оптимизировать закупки товаров.</p>
 
-    <footer>
-        <p>&copy; 2025 УУНиТ. Все права не защищены.</p>
-    </footer>
+        <!-- Форма для загрузки файла -->
+        <h3>Загрузите данные о товарах (CSV файл):</h3>
+        <form action="{{ url_for('upload_data') }}" method="POST" enctype="multipart/form-data">
+            <input type="file" name="data_file" required>
+            <button type="submit">Загрузить данные</button>
+        </form>
 
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+        <!-- Отображение загруженных данных -->
+        {% if data_files %}
+        <h3>Ваши загруженные данные:</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Имя файла</th>
+                    <th>Дата загрузки</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for file in data_files %}
+                <tr>
+                    <td>{{ file.file_name }}</td>
+                    <td>{{ file.created_at }}</td>
+                    <td><a href="{{ url_for('view_report', file_id=file.id) }}">Просмотр отчетов</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+
+        <!-- Генерация отчетов -->
+        <h3>Создание отчетов:</h3>
+        <form action="{{ url_for('generate_report') }}" method="POST">
+            <label for="max_inventory">Максимальный уровень запасов:</label>
+            <input type="number" name="max_inventory" value="480" required>
+            <button type="submit">Создать отчет</button>
+        </form>
+
+        <!-- Просмотр отчетов -->
+        {% if reports %}
+        <h3>Ваши отчеты:</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Название отчета</th>
+                    <th>Дата создания</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for report in reports %}
+                <tr>
+                    <td>{{ report.report_file_name }}</td>
+                    <td>{{ report.created_at }}</td>
+                    <td><a href="{{ url_for('download_report', report_id=report.id) }}">Скачать</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+
+        {% else %}
+        <h2>Добро пожаловать! Пожалуйста, войдите в аккаунт или зарегистрируйтесь, чтобы начать.</h2>
+        <p>Чтобы использовать функциональность системы (расчёт оптимального пополнения запасов и просмотр результатов), пожалуйста, войдите в аккаунт или зарегистрируйтесь.</p>
+        {% endif %}
+    </section>
+</main>
+
+<footer>
+    <p>&copy; 2025 УУНиТ. Все права не защищены.</p>
+</footer>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>

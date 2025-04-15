@@ -1,7 +1,8 @@
 from flask import Flask
 from database import db
 import os
-from routes import index, register, login, about, team, logout
+from routes import index, register, login, about, team, logout, upload_data, generate_report, view_report
+
 
 app = Flask(__name__)
 
@@ -23,6 +24,12 @@ app.add_url_rule('/login', 'login', login, methods=['GET', 'POST'])
 app.add_url_rule('/about', 'about', about)
 app.add_url_rule('/team', 'team', team)
 app.add_url_rule('/logout', 'logout', logout)  # Маршрут для выхода
+
+# маршруты для загрузки данных и отчетов
+app.add_url_rule('/upload_data', 'upload_data', upload_data, methods=['POST'])
+app.add_url_rule('/generate_report', 'generate_report', generate_report, methods=['POST'])
+app.add_url_rule('/view_report/<int:file_id>', 'view_report', view_report)
+
 
 if __name__ == '__main__':
     app.run(debug=True)

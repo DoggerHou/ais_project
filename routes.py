@@ -1,6 +1,7 @@
 from flask import render_template, request, redirect, url_for, flash, session
+import os
 from werkzeug.security import generate_password_hash, check_password_hash
-from database.models import User
+from database.models import User, DataFile, OptimizationReport
 from database import db
 
 
@@ -79,3 +80,42 @@ def logout():
     flash("Вы успешно вышли из системы.", "success")  # Добавляем flash сообщение
     return redirect(url_for('index'))  # Перенаправляем на главную страницу
 
+
+
+# Загрузка данных
+def upload_data():
+    if 'data_file' in request.files:
+        file = request.files['data_file']
+        if file:
+            filename = file.filename
+            file_path = os.path.join('uploads', filename)
+            file.save(file_path)
+            # Сохраняем информацию о загруженном файле в базу данных
+            new_file = DataFile(user_id=1, file_name=filename, file_path=file_path)  # Заглушка: user_id = 1
+            db.session.add(new_file)
+            db.session.commit()
+            flash("Файл успешно загружен!", "success")
+            return redirect(url_for('index'))
+    flash("Ошибка при загрузке файла.", "error")
+    return redirect(url_for('index'))
+
+
+# Генерация отчета (заглушка)
+def generate_report():
+    if request.method == 'POST':
+        # Заглушка: создание отчета с фиксированными данными
+        new_report = OptimizationReport(user_id=1, file_id=1, max_inventory=480, total_cost=1500.75,
+                                        report_file_name='report_2025-01-01.csv',
+                                        report_file_path='/reports/report_2025-01-01.csv')
+        db.session.add(new_report)
+        db.session.commit()
+        flash("Отчет успешно создан!", "success")
+        return redirect(url_for('index'))  # Перенаправление на главную после создания отчета
+
+
+
+# Просмотр отчетов (заглушка)
+def view_report(file_id):
+    # Заглушка: показываем отчеты, привязанные к файлу
+    reports = OptimizationReport.query.filter_by(file_id=file_id).all()
+    return render_template('index.html', reports=reports)
