@@ -74,7 +74,7 @@
                     <h3>Создание отчета для набора данных</h3>
                     <form action="{{ url_for('generate_report') }}" method="POST">
                         <label for="max_inventory">Максимальный уровень запасов:</label>
-                        <input type="number" name="max_inventory" value="480" required>
+                        <input type="number" name="max_inventory" id="max_inventory" value="480" required>
                         <button type="submit">Создать отчет</button>
                     </form>
                 </div>
