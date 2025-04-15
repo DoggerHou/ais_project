@@ -14,34 +14,40 @@ class User(db.Model):
     is_admin = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+    # Связь с файлами, загруженными пользователем
+    data_files = db.relationship('DataFile', backref='user', lazy=True)
 
-# Набор данных SKU
-class SkuDataset(db.Model):
+    # Связь с отчетами, сгенерированными пользователем
+    optimization_reports = db.relationship('OptimizationReport', backref='user', lazy=True)
+
+    def __repr__(self):
+        return f'<User {self.username}>'
+
+
+class DataFile(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    title = db.Column(db.String(120), default="Набор по умолчанию")
+    file_name = db.Column(db.String(255), nullable=False)
+    file_path = db.Column(db.String(255), nullable=False)  # путь к файлу на сервере
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    user = db.relationship('User', backref=db.backref('datasets', lazy=True))
+    # Связь с отчетами
+    reports = db.relationship('OptimizationReport', backref='data_file', lazy=True)
+
+    def __repr__(self):
+        return f'<DataFile {self.file_name}>'
 
 
-# Товары внутри набора
-class SkuItem(db.Model):
+class OptimizationReport(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    dataset_id = db.Column(db.Integer, db.ForeignKey('sku_dataset.id'), nullable=False)
-    name = db.Column(db.String(120), nullable=False)
-    demand = db.Column(db.Integer, nullable=False)
-    cost = db.Column(db.Float, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    file_id = db.Column(db.Integer, db.ForeignKey('data_file.id'), nullable=False)
+    max_inventory = db.Column(db.Integer, nullable=False)  # максимальный уровень запасов
+    total_cost = db.Column(db.Float, nullable=False)  # общая стоимость
+    report_file_name = db.Column(db.String(255), nullable=False)  # имя файла отчета
+    report_file_path = db.Column(db.String(255), nullable=False)  # путь к файлу отчета
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    dataset = db.relationship('SkuDataset', backref=db.backref('items', lazy=True))
-
-
-# Результаты оптимизации
-class ReplenishmentPlan(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    sku_item_id = db.Column(db.Integer, db.ForeignKey('sku_item.id'), nullable=False)
-    replenishment_times = db.Column(db.Integer, nullable=False)
-    calculated_at = db.Column(db.DateTime, default=datetime.utcnow)
-
-    sku_item = db.relationship('SkuItem', backref=db.backref('plans', lazy=True))
+    def __repr__(self):
+        return f'<OptimizationReport {self.report_file_name}>'
 
