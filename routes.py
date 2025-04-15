@@ -1,8 +1,21 @@
-from flask import render_template, request, redirect, url_for, flash, session
 import os
+import csv
+from datetime import datetime
+
+from flask import render_template, request, redirect, url_for, flash, session
 from werkzeug.security import generate_password_hash, check_password_hash
-from database.models import User, DataFile, OptimizationReport
 from database import db
+from database.models import User, DataFile, OptimizationReport
+
+
+# Папка для сохранения загруженных файлов
+UPLOAD_FOLDER = 'upload_data'
+ALLOWED_EXTENSIONS = {'csv'}
+
+
+# Проверка расширения файла
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 # Главная страница
@@ -84,19 +97,34 @@ def logout():
 
 # Загрузка данных
 def upload_data():
-    if 'data_file' in request.files:
-        file = request.files['data_file']
-        if file:
-            filename = file.filename
-            file_path = os.path.join('uploads', filename)
-            file.save(file_path)
-            # Сохраняем информацию о загруженном файле в базу данных
-            new_file = DataFile(user_id=1, file_name=filename, file_path=file_path)  # Заглушка: user_id = 1
-            db.session.add(new_file)
-            db.session.commit()
-            flash("Файл успешно загружен!", "success")
-            return redirect(url_for('index'))
-    flash("Ошибка при загрузке файла.", "error")
+    if 'data_file' not in request.files:
+        flash("Нет файла для загрузки", "error")
+        return redirect(url_for('index'))
+
+    file = request.files['data_file']
+
+    if file.filename == '':
+        flash("Нет выбранного файла", "error")
+        return redirect(url_for('index'))
+
+    if file and allowed_file(file.filename):
+        user_id = session['user_id']
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')  # Получаем текущую дату и время
+        filename = f"{user_id}_{timestamp}.csv"
+        file_path = os.path.join(UPLOAD_FOLDER, filename)
+
+        # Сохраняем файл в папке
+        file.save(file_path)
+
+        # Сохраняем информацию о файле в базе данных
+        new_file = DataFile(user_id=user_id, file_name=filename, file_path=file_path)
+        db.session.add(new_file)
+        db.session.commit()
+
+        flash("Файл успешно загружен и данные сохранены!", "success")
+        return redirect(url_for('index'))  # Перенаправление на главную страницу
+
+    flash("Неправильный формат файла. Пожалуйста, загрузите файл в формате CSV.", "error")
     return redirect(url_for('index'))
 
 

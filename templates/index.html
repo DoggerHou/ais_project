@@ -32,6 +32,16 @@
         {% if session.get('username') %}
         <h2>Добро пожаловать, {{ session['username'] }}!</h2>
         <p>Вы находитесь на сайте информационной системы, которая поможет вам оптимизировать закупки товаров.</p>
+            <!-- Отображаем сообщения flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="flash-messages">
+              {% for category, message in messages %}
+                <div class="flash {{ category }}">{{ message }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
 
         <!-- Форма для загрузки файла -->
         <h3>Загрузите данные о товарах (CSV файл):</h3>
