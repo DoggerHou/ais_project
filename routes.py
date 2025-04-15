@@ -79,7 +79,10 @@ def login():
         # Успешная авторизация
         if check_password_hash(user.password, password):
             session['username'] = user.username  # Сохраняем имя пользователя в сессии
-            return redirect(url_for('index'))  # Перенаправляем на главную страницу
+            data_files = DataFile.query.filter_by(user_id=user.id).all()  # Получаем все файлы для текущего пользователя
+            reports = OptimizationReport.query.filter_by(user_id=user.id).all()  # Получаем все отчеты для пользователя
+            return render_template('index.html', data_files=data_files, reports=reports)
+            #return redirect(url_for('index'))  # Перенаправляем на главную страницу
         else:
             flash("Неверный пароль!", "error")
             return render_template('login.html')
@@ -108,7 +111,7 @@ def upload_data():
         return redirect(url_for('index'))
 
     if file and allowed_file(file.filename):
-        user_id = session['user_id']
+        user_id = session['username']
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')  # Получаем текущую дату и время
         filename = f"{user_id}_{timestamp}.csv"
         file_path = os.path.join(UPLOAD_FOLDER, filename)
