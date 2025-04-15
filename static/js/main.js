@@ -1,6 +1,5 @@
 // Открытие модального окна для выбранного набора данных
 function openModal(fileId, file_name) {
-
     // Заполняем скрытое поле file_id значением выбранного файла
     document.getElementById('file_id').value = fileId;
     // Открываем модальное окно
@@ -32,7 +31,9 @@ function fetchReports(fileId) {
                         <td>${report.created_at}</td>
                         <td>${report.max_inventory}</td>
                         <td>${report.total_cost}</td>
+                        <td><button class="delete-btn" onclick='deleteReport(${report.id})'>Удалить</button></td>
                         <td><button class="download-btn" onclick='downloadReport(${report.id})'>Скачать</button></td>
+
                     `;
                     reportsList.appendChild(row);
                 });
@@ -67,6 +68,34 @@ function downloadReport(reportId) {
     });
 }
 
+// Функция для удаления отчета
+function deleteReport(reportId) {
+    fetch(`/delete_report/${reportId}`, {
+        method: 'DELETE',
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Перезагружаем список отчетов после удаления
+            fetchReports(data.file_id); // Передаем file_id, чтобы заново загрузить отчеты
+            alert('Отчет успешно удален');
+        } else {
+            alert('Ошибка при удалении отчета');
+        }
+    })
+    .catch(error => {
+        console.error('Ошибка при удалении отчета:', error);
+    });
+}
+
+
+// Закрытие модального окна
+document.querySelector('.reports-modal').addEventListener('click', function (e) {
+    if (e.target === this) {
+        document.getElementById('reportsModal').style.display = 'none';
+    }
+});
+
 // Изменяет изображения при нажатии на них
 document.addEventListener("DOMContentLoaded", () => {
     const imageToggles = [
@@ -92,11 +121,3 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 });
-
-// Закрытие модального окна
-document.querySelector('.reports-modal').addEventListener('click', function (e) {
-    if (e.target === this) {
-        document.getElementById('reportsModal').style.display = 'none';
-    }
-});
-

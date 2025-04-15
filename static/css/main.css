@@ -382,6 +382,21 @@ th {
     background-color: #218838;
 }
 
+.modal-body .delete-btn {
+    background-color: #dc3545; /* Красный цвет для кнопки удаления */
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+    margin-right: 10px; /* Отступ между кнопками */
+}
+
+.modal-body .delete-btn:hover {
+    background-color: #c82333; /* Более темный красный при наведении */
+}
+
 /* Закрытие модального окна при клике на фон */
 .reports-modal:focus {
     outline: none;

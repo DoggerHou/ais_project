@@ -162,8 +162,9 @@ def generate_report():
         report_file_path = os.path.join('report_data', report_file_name)
 
         # Обработка
-        print('Обработка началась', '\n', file.file_path)
+        print('Обработка началась')
         data, total_cost  = X(file.file_path, max_inventory)
+        print('Обработка закончилась')
 
         # Запись в csv
         data.to_csv(report_file_path, index=False, sep=",")
@@ -182,7 +183,6 @@ def generate_report():
 
         # Сообщение об успешной генерации отчета
         flash("Отчет успешно создан и сохранен!", "success")
-        print()
         return redirect(url_for('index'))  # Перенаправление на главную страницу
 
 
@@ -226,3 +226,30 @@ def download_report(report_id):
     else:
         flash("Отчет не найден", "error")
         return redirect(url_for('index'))
+
+
+def delete_report(report_id):
+    # Получаем отчет из базы данных
+    report = OptimizationReport.query.get(report_id)
+
+    if report:
+        # Путь к файлу отчета
+        file_path = report.report_file_path
+        raw_file_id = report.file_id
+        # Удаляем запись из базы данных
+        try:
+            db.session.delete(report)
+            db.session.commit()
+
+            # Проверка, существует ли файл по данному пути
+            if os.path.exists(file_path):
+                os.remove(file_path)  # Удаляем файл из хранилища
+                return jsonify({"success": True, 'file_id': raw_file_id}), 200  # Отправляем успешный ответ
+
+        except Exception as e:
+            db.session.rollback()  # Откатываем транзакцию в случае ошибки
+            flash("Ошибка при удалении отчета", "error")
+            return jsonify({"success": False, "error": str(e)}), 500
+    else:
+        flash("Отчет не найден", "error")
+        return jsonify({"success": False, "error": "Отчет не найден"}), 404
