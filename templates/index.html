@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <title>Главная — Система оптимизации</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Система оптимизации закупок</h1>
+        <nav>
+            <a href="{{ url_for('index') }}">Главная</a>
+            <a href="{{ url_for('about') }}">О проекте</a>
+            <a href="{{ url_for('team') }}">О нас</a>
+            <a href="{{ url_for('login') }}" class="auth">Войти</a>
+            <a href="{{ url_for('register') }}" class="auth">Регистрация</a>
+
+            {% if session.get('username') %}
+                <!-- Иконка профиля с выпадающим меню -->
+                <div class="profile-dropdown">
+                    <img src="{{ url_for('static', filename='images/profile.jpg') }}" alt="Профиль" class="profile-icon">
+                    <div class="dropdown-content">
+                        <a href="{{ url_for('logout') }}">Выход</a>
+                    </div>
+                </div>
+            {% endif %}
+        </nav>
+    </header>
+
+    <main>
+        <section class="intro">
+            {% if session.get('username') %}
+              <h2>Добро пожаловать, {{ session['username'] }}!</h2>
+            {% else %}
+              <h2>Добро пожаловать! Уважаемая Екатерина Юрьевна!!!!!!!!</h2>
+            {% endif %}
+            <p>
+                Вы находитесь на сайте информационной системы, разработанной в рамках проекта по предмету "Администрирование информационных систем". Эта система позволяет оптимизировать закупки товаров с помощью математической модели нелинейного программирования.
+            </p>
+            <p>
+                Чтобы использовать функциональность системы (расчёт оптимального пополнения запасов и просмотр результатов), пожалуйста, войдите в аккаунт или зарегистрируйтесь.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 УУНиТ. Все права не защищены.</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

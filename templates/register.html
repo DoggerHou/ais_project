@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Регистрация</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+  <header>
+    <h1>Система оптимизации закупок</h1>
+    <nav>
+      <a href="{{ url_for('index') }}">Главная</a>
+      <a href="{{ url_for('about') }}">О проекте</a>
+      <a href="{{ url_for('team') }}">О нас</a>
+      <a href="{{ url_for('login') }}" class="auth">Войти</a>
+      <a href="{{ url_for('register') }}" class="auth">Регистрация</a>
+    </nav>
+  </header>
+
+  <main>
+    <h2>Регистрация</h2>
+
+    <!-- Отображаем сообщения flash -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-messages">
+          {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <form action="/register" method="POST" class="auth-form">
+      <label for="username">Имя пользователя</label>
+      <input type="text" id="username" name="username" required>
+
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required>
+
+      <label for="password">Пароль</label>
+      <input type="password" id="password" name="password" required>
+
+      <button type="submit">Зарегистрироваться</button>
+    </form>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 УУНиТ. Наши права не защищены.</p>
+  </footer>

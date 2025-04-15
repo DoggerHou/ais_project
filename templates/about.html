@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <title>О проекте</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Система оптимизации закупок</h1>
+        <nav>
+            <a href="{{ url_for('index') }}">Главная</a>
+            <a href="{{ url_for('about') }}">О проекте</a>
+            <a href="{{ url_for('team') }}">О нас</a>
+            <a href="{{ url_for('login') }}" class="auth">Войти</a>
+            <a href="{{ url_for('register') }}" class="auth">Регистрация</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="about">
+            <h2>О проекте</h2>
+            <p>
+                Проект представляет собой информационную систему, предназначенную для оптимизации закупок товаров в розничной торговле.
+                В основе лежит математическая модель, минимизирующая совокупные издержки предприятия: транспортные, складские и капитальные.
+            </p>
+            <p>
+                Система реализована на стеке: <strong>Python (FastAPI)</strong> для серверной логики, <strong>HTML/CSS/JS</strong> для клиентского интерфейса и <strong>PostgreSQL/SQLite</strong> для хранения данных.
+                Расчёты выполняются с помощью библиотеки <code>scipy.optimize</code>.
+            </p>
+            <p>
+                Все основные функции доступны зарегистрированным пользователям, включая запуск модели, просмотр и анализ результатов.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 УУНиТ. Все права не защищены.</p>
+    </footer>
+</body>
+</html>
