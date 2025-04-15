@@ -51,25 +51,18 @@
             <button type="submit">Загрузить данные</button>
         </form>
 
-        <!-- Отображение всех наборов данных -->
+        <!-- Отображение загруженных данных -->
         {% if data_files %}
         <h3>Ваши загруженные наборы данных:</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Номер набора</th>
-                    <th>Дата загрузки</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for file in data_files %}
-                <tr>
-                    <td>{{ loop.index }}</td> <!-- Порядковый номер набора -->
-                    <td>{{ file.created_at }}</td> <!-- Дата загрузки -->
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="file-cards">
+            {% for file in data_files %}
+            <div class="file-card">
+                <h4>{{ file.file_name }}</h4>
+                <p class="date">{{ file.created_at.strftime('%d %B %Y, %H:%M') }}</p> <!-- Форматируем дату -->
+                <button class="view-reports-btn" data-file-id="{{ file.id }}">Просмотр отчетов</button>
+            </div>
+            {% endfor %}
+        </div>
         {% else %}
         <p>У вас нет загруженных наборов данных.</p>
         {% endif %}
@@ -82,27 +75,32 @@
             <button type="submit">Создать отчет</button>
         </form>
 
-        <!-- Просмотр отчетов -->
+        <!-- Просмотр отчетов (всплывающее окно) -->
         {% if reports %}
-        <h3>Ваши отчеты:</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Название отчета</th>
-                    <th>Дата создания</th>
-                    <th>Действия</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for report in reports %}
-                <tr>
-                    <td>{{ report.report_file_name }}</td>
-                    <td>{{ report.created_at }}</td>
-                    <td><a href="{{ url_for('download_report', report_id=report.id) }}">Скачать</a></td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="reports-modal" id="reportsModal">
+            <div class="modal-content">
+                <span class="close-btn">&times;</span>
+                <h3>Ваши отчеты:</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Название отчета</th>
+                            <th>Дата создания</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for report in reports %}
+                        <tr>
+                            <td>{{ report.report_file_name }}</td>
+                            <td>{{ report.created_at }}</td>
+                            <td><a href="{{ url_for('download_report', report_id=report.id) }}">Скачать</a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
         {% endif %}
 
         {% else %}
