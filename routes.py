@@ -90,7 +90,6 @@ def login():
             data_files = DataFile.query.filter_by(user_id=session['id']).all()  # Получаем все файлы для текущего пользователя
             reports = OptimizationReport.query.filter_by(user_id=session['id']).all()  # Получаем все отчеты для пользователя
             return render_template('index.html', data_files=data_files, reports=reports)
-            #return redirect(url_for('index'))  # Перенаправляем на главную страницу
         else:
             flash("Неверный пароль!", "error")
             return render_template('login.html')
@@ -163,22 +162,18 @@ def generate_report():
         report_file_path = os.path.join('report_data', report_file_name)
 
         # Обработка
-        print(file.file_path)
-        data, total_cost  =X(file.file_path, max_inventory)
+        print('Обработка началась', '\n', file.file_path)
+        data, total_cost  = X(file.file_path, max_inventory)
 
-        # Запись данных в CSV файл
-        with open(report_file_path, mode='w', newline='') as file:
-            writer = csv.DictWriter(file, fieldnames=["date", "sku", "max_inventory", "total_cost"])
-            writer.writeheader()
-            for row in data:
-                writer.writerow(row)
+        # Запись в csv
+        data.to_csv(report_file_path, index=False, sep=",")
 
         # Сохраняем информацию о созданном отчете в базе данных
         new_report = OptimizationReport(
             user_id=user_id,
             file_id=file_id,
             max_inventory=max_inventory,
-            total_cost=sum(item["total_cost"] for item in data),  # Суммарная стоимость
+            total_cost=total_cost,  # Суммарная стоимость
             report_file_name=report_file_name,
             report_file_path=report_file_path,
         )
@@ -203,6 +198,7 @@ def get_reports(file_id):
 
     # Формируем список отчетов для отправки в клиент
     reports_data = [{
+        "id": report.id,
         "created_at": report.created_at.strftime('%d %B %Y, %H:%M'),
         "max_inventory": report.max_inventory,
         "total_cost": report.total_cost,
@@ -214,7 +210,6 @@ def get_reports(file_id):
 
 
 def download_report(report_id):
-    print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
     # Получаем отчет из базы данных
     report = OptimizationReport.query.get(report_id)
 

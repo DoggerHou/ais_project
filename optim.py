@@ -63,6 +63,10 @@ def X(file_path, max_capacity):
     sol_init = sol.x
     # Take the ceiling of the solution to have an integer as number of replenishment
     sol_final = [math.ceil(i) for i in sol_init]
-    print(sol_final)
+    print(sol_final, sum(sol_final))
 
-    return sol_final
+    names = list(df['SKU'])
+
+    ans_df = pd.DataFrame({'SKU': names, 'total_cost': sol_final})
+
+    return ans_df, sum(sol_final)

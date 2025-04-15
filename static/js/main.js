@@ -1,5 +1,5 @@
 // Открытие модального окна для выбранного набора данных
-function openModal(fileId) {
+function openModal(fileId, file_name) {
 
     // Заполняем скрытое поле file_id значением выбранного файла
     document.getElementById('file_id').value = fileId;
@@ -9,7 +9,7 @@ function openModal(fileId) {
 
     // Вставляем название файла в заголовок модального окна
     const header = document.querySelector('.modal-header h3');
-    header.innerText = 'Создание отчета для набора данных: ${fileName}';
+    header.innerText = `Создание отчета для набора данных: ${file_name}`;
 
     // Загружаем отчеты из базы данных для этого файла
     fetchReports(fileId);
@@ -32,9 +32,7 @@ function fetchReports(fileId) {
                         <td>${report.created_at}</td>
                         <td>${report.max_inventory}</td>
                         <td>${report.total_cost}</td>
-                        <td><button class="download-btn" onclick="downloadReport(${fileId})">Скачать</button></td>
-
-                        alert("${fileId}");
+                        <td><button class="download-btn" onclick='downloadReport(${report.id})'>Скачать</button></td>
                     `;
                     reportsList.appendChild(row);
                 });
@@ -49,6 +47,25 @@ function fetchReports(fileId) {
         });
 }
 
+
+// Функция для скачивания отчета
+function downloadReport(reportId) {
+    // Отправляем запрос на сервер для получения отчета
+    fetch(`/download_report/${reportId}`, {
+        method: 'GET',
+    })
+    .then(response => response.blob()) // Получаем файл как Blob
+    .then(blob => {
+        // Создаем URL для файла
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `report_${reportId}.csv`; // Указываем имя для скачивания
+        link.click(); // Инициируем скачивание
+    })
+    .catch(error => {
+        console.error('Ошибка при скачивании отчета:', error);
+    });
+}
 
 // Изменяет изображения при нажатии на них
 document.addEventListener("DOMContentLoaded", () => {
@@ -83,23 +100,3 @@ document.querySelector('.reports-modal').addEventListener('click', function (e) 
     }
 });
 
-
-// Функция для скачивания отчета
-function downloadReport(reportId) {
-    alet('god')
-    // Отправляем запрос на сервер для получения отчета
-    fetch(`/download_report/${reportId}`, {
-        method: 'GET',
-    })
-    .then(response => response.blob()) // Получаем файл как Blob
-    .then(blob => {
-        // Создаем URL для файла
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = 'report_${reportId}.csv'; // Указываем имя для скачивания
-        link.click(); // Инициируем скачивание
-    })
-    .catch(error => {
-        console.error('Ошибка при скачивании отчета:', error);
-    });
-}
