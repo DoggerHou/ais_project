@@ -357,8 +357,12 @@ th {
 /* Стили для нижней части модального окна */
 .modal-body {
     padding-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
+/* Таблица отчетов */
 .modal-body table {
     width: 100%;
     border-collapse: collapse;
@@ -370,6 +374,19 @@ th {
     border-bottom: 1px solid #ddd;
 }
 
+.modal-body th:last-child {
+    text-align: right;
+}
+
+/* Контейнер для кнопок (скачать и удалить) */
+.modal-body .button-container {
+    display: flex;
+    gap: 10px; /* Расстояние между кнопками */
+    justify-content: flex-start;
+    margin-top: 10px; /* Отступ сверху */
+}
+
+/* Стили для кнопки "Скачать" */
 .modal-body .download-btn {
     background-color: #28a745;
     color: white;
@@ -378,12 +395,14 @@ th {
     cursor: pointer;
     border-radius: 5px;
     font-size: 14px;
+    width: 120px;  /* Ограничиваем ширину кнопки */
 }
 
 .modal-body .download-btn:hover {
     background-color: #218838;
 }
 
+/* Стили для кнопки "Удалить" */
 .modal-body .delete-btn {
     background-color: #dc3545; /* Красный цвет для кнопки удаления */
     color: white;
@@ -392,7 +411,16 @@ th {
     cursor: pointer;
     border-radius: 5px;
     font-size: 14px;
-    margin-right: 10px; /* Отступ между кнопками */
+    width: 120px;  /* Ограничиваем ширину кнопки */
+}
+
+/* Обеспечиваем выравнивание кнопок в строке */
+.modal-body .button-container {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-start; /* Выравнивание по левому краю */
+    padding-left: 0; /* Убираем стандартный отступ */
+    margin-left: -8px; /* Сдвигаем левее *
 }
 
 .modal-body .delete-btn:hover {

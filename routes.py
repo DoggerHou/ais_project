@@ -270,6 +270,9 @@ def delete_file(file_id):
                 os.remove(report.report_file_path)
             db.session.delete(report)  # Удаляем отчет из базы данных
 
+        # Удаляем файл из хранилища
+        if os.path.exists(file.file_path):
+            os.remove(file.file_path)
         # Удаляем файл из базы данных
         db.session.delete(file)
         db.session.commit()

@@ -59,7 +59,7 @@
             <div class="file-card" onclick="openModal({{ file.id }}, '{{ file.file_name }}')">
                 <h4>{{ file.file_name }}</h4>
                 <p class="date">{{ file.created_at.strftime('%d %B %Y, %H:%M') }}</p>
-                <button class="delete-report-btn" onclick="confirmDelete({{ file.id }}, '{{ file.file_name }}')">Удалить отчет</button>
+                <button class="delete-report-btn" onclick="confirmDelete({{ file.id }}, '{{ file.file_name }}')">Удалить файл</button>
             </div>
             {% endfor %}
         </div>
@@ -88,7 +88,6 @@
                                 <th>Дата</th>
                                 <th>Размер склада</th>
                                 <th>Финальная стоимость</th>
-                                <th>Действия</th>
                             </tr>
                         </thead>
                         <tbody id="reportsList">
