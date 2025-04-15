@@ -1,3 +1,4 @@
+// Изменяет изображения при нажатии на них
 document.addEventListener("DOMContentLoaded", () => {
     const imageToggles = [
         {
@@ -26,25 +27,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Открытие модального окна для выбранного набора данных
 function openModal(fileId) {
+
+    // Заполняем скрытое поле file_id значением выбранного файла
+    document.getElementById('file_id').value = fileId;
+
+    // Открываем модальное окно
     const modal = document.getElementById('reportsModal');
     modal.style.display = 'flex';
 
-    // Вставим данные отчетов в таблицу (пока заглушка)
-    const reportsList = document.getElementById('reportsList');
-    reportsList.innerHTML = `
-        <tr>
-            <td>15 апреля 2025, 03:31</td>
-            <td>480</td>
-            <td>1500.75</td>
-            <td><button class="download-btn">Скачать</button></td>
-        </tr>
-        <tr>
-            <td>16 апреля 2025, 05:12</td>
-            <td>480</td>
-            <td>1400.60</td>
-            <td><button class="download-btn">Скачать</button></td>
-        </tr>
-    `;
+    // Вставляем название файла в заголовок модального окна
+    const header = document.querySelector('.modal-header h3');
+    header.innerText = `Создание отчета для набора данных: ${fileName}`
+
+    // Загружаем отчеты из базы данных для этого файла
+    fetchReports(fileId);
 }
 
 // Закрытие модального окна
@@ -53,3 +49,36 @@ document.querySelector('.reports-modal').addEventListener('click', function (e) 
         document.getElementById('reportsModal').style.display = 'none';
     }
 });
+
+// Функция для загрузки отчетов
+function fetchReports(fileId) {
+    fetch(`/get_reports/${fileId}`)
+        .then(response => response.json())
+        .then(data => {
+            const reportsList = document.getElementById('reportsList');
+            reportsList.innerHTML = ''; // Очистить таблицу перед добавлением данных
+
+            // Добавляем отчеты в таблицу
+            if (data.reports.length > 0) {
+                data.reports.forEach(report => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${report.created_at}</td>
+                        <td>${report.max_inventory}</td>
+                        <td>${report.total_cost}</td>
+                        <td><a href="${report.report_file_path}" class="download-btn" download>Скачать</a></td>
+                    `;
+                    reportsList.appendChild(row);
+                });
+            } else {
+                const row = document.createElement('tr');
+                row.innerHTML = '<td colspan="4">Отчеты не найдены</td>';
+                reportsList.appendChild(row);
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка при загрузке отчетов:', error);
+        });
+}
+
+

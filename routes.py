@@ -2,7 +2,7 @@ import os
 import csv
 from datetime import datetime
 
-from flask import render_template, request, redirect, url_for, flash, session
+from flask import render_template, request, redirect, url_for, flash, session, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from database import db
 from database.models import User, DataFile, OptimizationReport
@@ -116,7 +116,7 @@ def upload_data():
         return redirect(url_for('index'))
 
     if file and allowed_file(file.filename):
-        user_id = session['username']
+        user_id = session['id']
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')  # Получаем текущую дату и время
         filename = f"{user_id}_{timestamp}.csv"
         file_path = os.path.join(UPLOAD_FOLDER, filename)
@@ -136,22 +136,79 @@ def upload_data():
     return redirect(url_for('index'))
 
 
-# Генерация отчета (заглушка)
+# Генерация отчета
 def generate_report():
     if request.method == 'POST':
-        # Заглушка: создание отчета с фиксированными данными
-        new_report = OptimizationReport(user_id=1, file_id=1, max_inventory=228, total_cost=1488,
-                                        report_file_name='report_2025-01-01.csv',
-                                        report_file_path='/reports/report_2025-01-01.csv')
+
+        if 'id' not in session:
+            return redirect(url_for('login'))
+
+        # Получаем данные из формы
+        file_id = request.form['file_id']  # Идентификатор файла
+        max_inventory = int(request.form['max_inventory'])  # Максимальный уровень запасов
+        user_id = session['id']  # Получаем ID текущего пользователя из сессии
+
+        # Получаем файл из базы данных
+        file = DataFile.query.get(file_id)
+        if not file:
+            flash("Файл не найден!", "error")
+            return redirect(url_for('index'))
+
+        # Путь для сохранения отчета
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')  # Генерация уникального имени для файла
+        report_file_name = f"report_{user_id}_{file_id}_{timestamp}.csv"
+        report_file_path = os.path.join('report_data', report_file_name)
+
+        # "Черный ящик" для обработки данных (здесь можно вставить свою логику оптимизации)
+        # Заглушка - создадим фиктивные данные для отчета
+        data = [
+            {"date": "2025-04-15", "sku": "D1", "max_inventory": max_inventory, "total_cost": 1500.75},
+            {"date": "2025-04-16", "sku": "D2", "max_inventory": max_inventory, "total_cost": 1450.30},
+        ]
+
+        # Запись данных в CSV файл
+        with open(report_file_path, mode='w', newline='') as file:
+            writer = csv.DictWriter(file, fieldnames=["date", "sku", "max_inventory", "total_cost"])
+            writer.writeheader()
+            for row in data:
+                writer.writerow(row)
+
+        # Сохраняем информацию о созданном отчете в базе данных
+        new_report = OptimizationReport(
+            user_id=user_id,
+            file_id=file_id,
+            max_inventory=max_inventory,
+            total_cost=sum(item["total_cost"] for item in data),  # Суммарная стоимость
+            report_file_name=report_file_name,
+            report_file_path=report_file_path,
+        )
         db.session.add(new_report)
         db.session.commit()
-        flash("Отчет успешно создан!", "success")
-        return redirect(url_for('index'))  # Перенаправление на главную после создания отчета
+
+        # Сообщение об успешной генерации отчета
+        flash("Отчет успешно создан и сохранен!", "success")
+        print()
+        return redirect(url_for('index'))  # Перенаправление на главную страницу
 
 
+# Получение отчетов для определенного файла и пользователя
+def get_reports(file_id):
+    if 'id' not in session:
+        return redirect(url_for('login'))
 
-# Просмотр отчетов (заглушка)
-def view_report(file_id):
-    # Заглушка: показываем отчеты, привязанные к файлу
-    reports = OptimizationReport.query.filter_by(file_id=file_id).all()
-    return render_template('index.html', reports=reports)
+    user_id = session['user_id']  # Извлекаем user_id из сессии
+
+    # Извлекаем все отчеты для данного файла и пользователя
+    reports = OptimizationReport.query.filter_by(user_id=user_id, file_id=file_id).all()
+
+    # Формируем список отчетов для отправки в клиент
+    reports_data = [{
+        "created_at": report.created_at.strftime('%d %B %Y, %H:%M'),
+        "max_inventory": report.max_inventory,
+        "total_cost": report.total_cost,
+        "report_file_path": report.report_file_path,
+    } for report in reports]
+    print('bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb')
+    print(jsonify({"reports": reports_data}))
+    # Возвращаем данные в формате JSON
+    return jsonify({"reports": reports_data})

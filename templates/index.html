@@ -56,10 +56,10 @@
         <h3>Ваши загруженные наборы данных:</h3>
         <div class="file-cards">
             {% for file in data_files %}
-            <div class="file-card" onclick="openModal({{ file.id }})">
+            <div class="file-card" onclick="openModal({{ file.id }}, '{{ file.file_name }}')">
                 <h4>{{ file.file_name }}</h4>
                 <p class="date">{{ file.created_at.strftime('%d %B %Y, %H:%M') }}</p>
-                <button class="view-reports-btn">Просмотр отчетов</button>
+                <button class="view-reports-btn">Создать отчет</button>
             </div>
             {% endfor %}
         </div>
@@ -75,6 +75,7 @@
                     <form action="{{ url_for('generate_report') }}" method="POST">
                         <label for="max_inventory">Максимальный уровень запасов:</label>
                         <input type="number" name="max_inventory" id="max_inventory" value="480" required>
+                        <input type="hidden" name="file_id" id="file_id">
                         <button type="submit">Создать отчет</button>
                     </form>
                 </div>
