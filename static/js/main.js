@@ -32,8 +32,9 @@ function fetchReports(fileId) {
                         <td>${report.created_at}</td>
                         <td>${report.max_inventory}</td>
                         <td>${report.total_cost}</td>
-                        <td><a href="{{url_for('download_report', report_id=report.id)}}" class="download-btn" download>Скачать</a></td>
+                        <td><button class="download-btn" onclick="downloadReport(${fileId})">Скачать</button></td>
 
+                        alert("${fileId}");
                     `;
                     reportsList.appendChild(row);
                 });
@@ -81,3 +82,24 @@ document.querySelector('.reports-modal').addEventListener('click', function (e) 
         document.getElementById('reportsModal').style.display = 'none';
     }
 });
+
+
+// Функция для скачивания отчета
+function downloadReport(reportId) {
+    alet('god')
+    // Отправляем запрос на сервер для получения отчета
+    fetch(`/download_report/${reportId}`, {
+        method: 'GET',
+    })
+    .then(response => response.blob()) // Получаем файл как Blob
+    .then(blob => {
+        // Создаем URL для файла
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'report_${reportId}.csv'; // Указываем имя для скачивания
+        link.click(); // Инициируем скачивание
+    })
+    .catch(error => {
+        console.error('Ошибка при скачивании отчета:', error);
+    });
+}

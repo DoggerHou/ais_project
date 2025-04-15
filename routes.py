@@ -7,6 +7,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from database import db
 from database.models import User, DataFile, OptimizationReport
 
+from optim import X
+
+
 
 # Папка для сохранения загруженных файлов
 UPLOAD_FOLDER = 'upload_data'
@@ -159,12 +162,9 @@ def generate_report():
         report_file_name = f"report_{user_id}_{file_id}_{timestamp}.csv"
         report_file_path = os.path.join('report_data', report_file_name)
 
-        # "Черный ящик" для обработки данных (здесь можно вставить свою логику оптимизации)
-        # Заглушка - создадим фиктивные данные для отчета
-        data = [
-            {"date": "2025-04-15", "sku": "D1", "max_inventory": max_inventory, "total_cost": 1500.75},
-            {"date": "2025-04-16", "sku": "D2", "max_inventory": max_inventory, "total_cost": 1450.30},
-        ]
+        # Обработка
+        print(file.file_path)
+        data, total_cost  =X(file.file_path, max_inventory)
 
         # Запись данных в CSV файл
         with open(report_file_path, mode='w', newline='') as file:
