@@ -2,7 +2,7 @@ import os
 import csv
 from datetime import datetime
 
-from flask import render_template, request, redirect, url_for, flash, session, jsonify
+from flask import render_template, request, redirect, url_for, flash, session, jsonify, send_file
 from werkzeug.security import generate_password_hash, check_password_hash
 from database import db
 from database.models import User, DataFile, OptimizationReport
@@ -196,7 +196,7 @@ def get_reports(file_id):
     if 'id' not in session:
         return redirect(url_for('login'))
 
-    user_id = session['user_id']  # Извлекаем user_id из сессии
+    user_id = session['id']  # Извлекаем user_id из сессии
 
     # Извлекаем все отчеты для данного файла и пользователя
     reports = OptimizationReport.query.filter_by(user_id=user_id, file_id=file_id).all()
@@ -208,7 +208,26 @@ def get_reports(file_id):
         "total_cost": report.total_cost,
         "report_file_path": report.report_file_path,
     } for report in reports]
-    print('bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb')
-    print(jsonify({"reports": reports_data}))
     # Возвращаем данные в формате JSON
     return jsonify({"reports": reports_data})
+
+
+
+def download_report(report_id):
+    print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+    # Получаем отчет из базы данных
+    report = OptimizationReport.query.get(report_id)
+
+    if report:
+        # Путь к файлу отчета
+        file_path = report.report_file_path
+
+        # Проверка, существует ли файл по данному пути
+        if os.path.exists(file_path):
+            return send_file(file_path, as_attachment=True)  # Отправляем файл на скачивание
+        else:
+            flash("Файл отчета не найден!", "error")
+            return redirect(url_for('index'))
+    else:
+        flash("Отчет не найден", "error")
+        return redirect(url_for('index'))

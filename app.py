@@ -1,7 +1,7 @@
 from flask import Flask
 from database import db
 import os
-from routes import index, register, login, about, team, logout, upload_data, generate_report, get_reports
+from routes import index, register, login, about, team, logout, upload_data, generate_report, get_reports, download_report
 
 
 app = Flask(__name__)
@@ -10,6 +10,8 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///project_db.sqlite'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.urandom(24)  # Генерируем случайный секретный ключ для приложения
+app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'upload_data')  # Путь к папке с отчетами
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # Ограничение на размер загружаемого файла
 db.init_app(app)
 
 # Создание таблиц (если они ещё не существуют)
@@ -29,6 +31,7 @@ app.add_url_rule('/logout', 'logout', logout)  # Маршрут для выхо�
 app.add_url_rule('/upload_data', 'upload_data', upload_data, methods=['POST'])
 app.add_url_rule('/generate_report', 'generate_report', generate_report, methods=['POST'])
 app.add_url_rule('/get_reports/<int:file_id>', 'get_reports', get_reports)
+app.add_url_rule('/download_report/<int:report_id>', 'download_report', download_report)
 
 
 if __name__ == '__main__':
