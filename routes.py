@@ -20,6 +20,10 @@ def allowed_file(filename):
 
 # Главная страница
 def index():
+    if 'id' in session:
+        data_files = DataFile.query.filter_by(user_id=session['id']).all()  # Получаем все файлы для текущего пользователя
+        reports = OptimizationReport.query.filter_by(user_id=session['id']).all()  # Получаем все отчеты для пользователя
+        return render_template('index.html', data_files=data_files, reports=reports)
     return render_template('index.html')
 
 # О проекте
@@ -79,8 +83,9 @@ def login():
         # Успешная авторизация
         if check_password_hash(user.password, password):
             session['username'] = user.username  # Сохраняем имя пользователя в сессии
-            data_files = DataFile.query.filter_by(user_id=user.id).all()  # Получаем все файлы для текущего пользователя
-            reports = OptimizationReport.query.filter_by(user_id=user.id).all()  # Получаем все отчеты для пользователя
+            session['id'] = user.id
+            data_files = DataFile.query.filter_by(user_id=session['id']).all()  # Получаем все файлы для текущего пользователя
+            reports = OptimizationReport.query.filter_by(user_id=session['id']).all()  # Получаем все отчеты для пользователя
             return render_template('index.html', data_files=data_files, reports=reports)
             #return redirect(url_for('index'))  # Перенаправляем на главную страницу
         else:
@@ -135,7 +140,7 @@ def upload_data():
 def generate_report():
     if request.method == 'POST':
         # Заглушка: создание отчета с фиксированными данными
-        new_report = OptimizationReport(user_id=1, file_id=1, max_inventory=480, total_cost=1500.75,
+        new_report = OptimizationReport(user_id=1, file_id=1, max_inventory=228, total_cost=1488,
                                         report_file_name='report_2025-01-01.csv',
                                         report_file_path='/reports/report_2025-01-01.csv')
         db.session.add(new_report)
