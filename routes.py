@@ -10,9 +10,13 @@ from optim import X
 
 
 # Папка для сохранения загруженных файлов
-UPLOAD_FOLDER = 'upload_data'
-REPORT_FOLDER = 'report_data'
+UPLOAD_FOLDER = 'instance/reports'
+REPORT_FOLDER = 'instance/files'
 ALLOWED_EXTENSIONS = {'csv'}
+
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(REPORT_FOLDER, exist_ok=True)
+
 
 
 # Проверка расширения файла
