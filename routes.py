@@ -11,6 +11,7 @@ from optim import X
 
 # Папка для сохранения загруженных файлов
 UPLOAD_FOLDER = 'upload_data'
+REPORT_FOLDER = 'report_data'
 ALLOWED_EXTENSIONS = {'csv'}
 
 
@@ -157,7 +158,7 @@ def generate_report():
         # Путь для сохранения отчета
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')  # Генерация уникального имени для файла
         report_file_name = f"report_{user_id}_{file_id}_{timestamp}.csv"
-        report_file_path = os.path.join('report_data', report_file_name)
+        report_file_path = os.path.join(REPORT_FOLDER, report_file_name)
 
         # Обработка
         print('Обработка началась')
