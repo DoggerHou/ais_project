@@ -25,7 +25,7 @@ app.add_url_rule('/register', 'register', register, methods=['GET', 'POST'])
 app.add_url_rule('/login', 'login', login, methods=['GET', 'POST'])
 app.add_url_rule('/about', 'about', about)
 app.add_url_rule('/team', 'team', team)
-app.add_url_rule('/logout', 'logout', logout)  # Маршрут для выхода
+app.add_url_rule('/logout', 'logout', logout)
 
 # маршруты для загрузки данных и отчетов
 app.add_url_rule('/upload_data', 'upload_data', upload_data, methods=['POST'])

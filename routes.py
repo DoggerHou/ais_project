@@ -1,7 +1,5 @@
 import os
-import csv
 from datetime import datetime
-
 from flask import render_template, request, redirect, url_for, flash, session, jsonify, send_file
 from werkzeug.security import generate_password_hash, check_password_hash
 from database import db
@@ -208,7 +206,7 @@ def get_reports(file_id):
     return jsonify({"reports": reports_data})
 
 
-
+# загрузка отчета
 def download_report(report_id):
     # Получаем отчет из базы данных
     report = OptimizationReport.query.get(report_id)

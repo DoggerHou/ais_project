@@ -1,9 +1,6 @@
 import pandas as pd
-from pulp import *
-import numpy as np
 from scipy.optimize import minimize
 import math
-import time
 
 
 def X(file_path, max_capacity):
@@ -68,4 +65,4 @@ def X(file_path, max_capacity):
 
     ans_df = pd.DataFrame({'SKU': names, 'total_cost': sol_final})
 
-    return ans_df, sum(sol_final)
+    return ans_df, float(round(objective(sol_final), 1))
