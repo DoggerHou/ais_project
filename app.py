@@ -5,7 +5,7 @@ from routes import index, register, login, about, team, logout, upload_data, gen
 from flask_restx import Api, Resource
 
 app = Flask(__name__)
-api = Api(app, doc='/docs')  # Указываем путь для документации
+#api = Api(app, doc='/docs')  # Указываем путь для документации
 
 # Конфигурация базы данных
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///project_db.sqlite'
