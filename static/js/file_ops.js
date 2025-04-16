@@ -1,81 +1,3 @@
-// Изменяет изображения при нажатии на них
-document.addEventListener("DOMContentLoaded", () => {
-    const imageToggles = [
-        {
-            id: "artem",
-            image1: document.getElementById("artem").getAttribute("data-image-1"),
-            image2: document.getElementById("artem").getAttribute("data-image-2"),
-        },
-        {
-            id: "adelina",
-            image1: document.getElementById("adelina").getAttribute("data-image-1"),
-            image2: document.getElementById("adelina").getAttribute("data-image-2"),
-        }
-    ];
-
-    imageToggles.forEach(({ id, image1, image2 }) => {
-        const img = document.getElementById(id);
-        let toggled = false;
-
-        img.addEventListener("click", () => {
-            toggled = !toggled;
-            img.src = toggled ? image2 : image1;
-        });
-    });
-});
-
-
-// Открытие модального окна для выбранного набора данных
-function openModal(fileId, file_name) {
-    // Заполняем скрытое поле file_id значением выбранного файла
-    document.getElementById('file_id').value = fileId;
-    // Открываем модальное окно
-    const modal = document.getElementById('reportsModal');
-    modal.style.display = 'flex';
-
-    // Вставляем название файла в заголовок модального окна
-    const header = document.querySelector('.modal-header h3');
-    header.innerText = `Создание отчета для набора данных: ${file_name}`;
-
-    // Загружаем отчеты из базы данных для этого файла
-    fetchReports(fileId);
-}
-
-
-function fetchReports(fileId) {
-    fetch(`/get_reports/${fileId}`)
-        .then(response => response.json())
-        .then(data => {
-            const reportsList = document.getElementById('reportsList');
-            reportsList.innerHTML = ''; // Очистить таблицу перед добавлением данных
-
-
-            // Добавляем отчеты в таблицу
-            if (data.reports.length > 0) {
-                data.reports.forEach(report => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${report.created_at}</td>
-                        <td>${report.max_inventory}</td>
-                        <td>${report.total_cost}</td>
-                        <td><button class="delete-btn" onclick='deleteReport(${report.id})'>Удалить</button></td>
-                        <td><button class="download-btn" onclick='downloadReport(${report.id})'>Скачать</button></td>
-
-                    `;
-                    reportsList.appendChild(row);
-                });
-            } else {
-                const row = document.createElement('tr');
-                row.innerHTML = '<td colspan="4">Отчеты не найдены</td>';
-                reportsList.appendChild(row);
-            }
-        })
-        .catch(error => {
-            console.error('Ошибка при загрузке отчетов:', error);
-        });
-}
-
-
 // Функция для скачивания отчета
 function downloadReport(reportId) {
     // Отправляем запрос на сервер для получения отчета
@@ -94,6 +16,7 @@ function downloadReport(reportId) {
         console.error('Ошибка при скачивании отчета:', error);
     });
 }
+
 
 // Функция для удаления отчета
 function deleteReport(reportId) {
@@ -116,14 +39,6 @@ function deleteReport(reportId) {
 }
 
 
-// Закрытие модального окна
-document.querySelector('.reports-modal').addEventListener('click', function (e) {
-    if (e.target === this) {
-        document.getElementById('reportsModal').style.display = 'none';
-    }
-});
-
-
 // Функция для отображения окна подтверждения удаления
 function confirmDelete(fileId, fileName) {
     // Создаем и отображаем диалоговое окно с подтверждением
@@ -139,6 +54,7 @@ function confirmDelete(fileId, fileName) {
     `;
     document.body.appendChild(confirmDialog);
 }
+
 
 // Функция для подтверждения удаления
 function deleteFile(fileId, fileName) {
@@ -160,6 +76,7 @@ function deleteFile(fileId, fileName) {
         document.body.removeChild(document.querySelector('.confirm-dialog')); // Убираем диалог
     });
 }
+
 
 // Функция для отмены удаления
 function cancelDelete() {

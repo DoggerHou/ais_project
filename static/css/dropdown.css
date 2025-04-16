@@ -1,0 +1,49 @@
+/* Стили для выпадающего меню */
+.profile-dropdown {
+    position: absolute;
+    top: 20px;  /* Отступ от верхней части */
+    left: 20px;  /* Отступ от левой части */
+    display: inline-block;
+    cursor: pointer;
+}
+
+.profile-icon {
+    width: 120px;  /* Увеличиваем размер иконки профиля в 2 раза */
+    height: 120px; /* Увеличиваем размер иконки профиля в 2 раза */
+    border-radius: 50%;  /* Сделаем картинку круглой */
+    object-fit: cover;  /* Картинка будет обрезана по форме круга */
+    border: 2px solid #ddd;  /* Тонкая рамка вокруг картинки */
+}
+
+.dropdown-content {
+    display: none;  /* Скрыто по умолчанию */
+    position: absolute;
+    top: 100%;  /* Сразу под иконкой */
+    left: 0;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    border-radius: 5px;
+}
+
+.profile-dropdown:hover .dropdown-content,
+.dropdown-content:hover {
+    display: block;  /* Показываем меню при наведении */
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    border-bottom: 1px solid #ddd;
+}
+
+.dropdown-content a:hover {
+    background-color: #f1f1f1;
+}
+
+.dropdown-content a:last-child {
+    border-bottom: none;
+}
