@@ -251,8 +251,10 @@ def generate_report():
         security:
           - cookieAuth: []
         """
-    if 'id' not in session:
-        return jsonify({"error": "Не авторизован"}), 401
+    user_id = session.get('id') or request.cookies.get('user_id')
+
+    if not user_id:
+        return jsonify({"error": "Необходима авторизация"}), 401
 
     # Получаем данные из формы
     file_id = request.form['file_id']  # Идентификатор файла

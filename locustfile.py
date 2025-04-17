@@ -18,19 +18,12 @@ class ApiTestUser(HttpUser):
 '''
 
 
-
+"""
 class FileUploadUser(HttpUser):
     # Определите паузу между запросами
     wait_time = between(1, 2)
     # Замените на URL вашего сервера
     upload_url = "/upload_data"
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(args, kwargs)
-        self.user_id = None
-
-    def on_start(self):
-        self.user_id = 1
 
     @task
     def upload_file(self):
@@ -38,7 +31,7 @@ class FileUploadUser(HttpUser):
         file_path = "my_data.csv"
 
         cookies = {
-            'user_id': str(self.user_id)  # Добавляем user_id в cookies
+            'user_id': str(1)  # Добавляем user_id в cookies
         }
 
         # Открываем реальный файл для отправки
@@ -53,5 +46,34 @@ class FileUploadUser(HttpUser):
             # Проверка, что файл загружен успешно
             if response.status_code == 200:
                 print("Файл успешно загружен!")
-            else:
+            elif response:
                 print("Ошибка загрузки файла:", response.json())
+"""
+
+class ReportGenerationUser(HttpUser):
+    # Определите паузу между запросами
+    wait_time = between(1, 2)
+
+    # Замените на URL вашего сервера
+    generate_report_url = "/generate_report"
+    @task
+    def generate_report(self):
+        # Данные для формы
+        form_data = {
+            'file_id': 3,
+            'max_inventory': 480  # Пример максимального уровня запасов
+        }
+
+        # Устанавливаем cookies для сессии (имитируем авторизацию пользователя)
+        cookies = {
+            'user_id': str(1)  # Передаем user_id в cookies
+        }
+
+        # Отправляем POST-запрос на сервер с данными формы и cookie
+        response = self.client.post(self.generate_report_url, data=form_data, cookies=cookies)
+
+        # Проверка, что отчет был успешно создан
+        if response.status_code == 200:
+            print("Отчет успешно создан!")
+        else:
+            print("Ошибка создания отчета:", response.json())
