@@ -9,6 +9,7 @@ from optim import X
 
 
 
+
 # Папка для сохранения загруженных файлов
 UPLOAD_FOLDER = 'instance/files'
 REPORT_FOLDER = 'instance/reports'
@@ -43,6 +44,10 @@ def team():
 
 # Страница регистрации
 def register():
+    """
+    Регистрация пользователя
+    :return:
+    """
     if request.method == 'POST':
         username = request.form['username']
         email = request.form['email']
@@ -74,6 +79,10 @@ def register():
 
 # Страница авторизации
 def login():
+    """
+    Авторизация пользователя
+    :return:
+    """
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -90,9 +99,7 @@ def login():
         if check_password_hash(user.password, password):
             session['username'] = user.username  # Сохраняем имя пользователя в сессии
             session['id'] = user.id
-            data_files = DataFile.query.filter_by(user_id=session['id']).all()  # Получаем все файлы для текущего пользователя
-            reports = OptimizationReport.query.filter_by(user_id=session['id']).all()  # Получаем все отчеты для пользователя
-            return render_template('index.html', data_files=data_files, reports=reports)
+            return index()
         else:
             flash("Неверный пароль!", "error")
             return render_template('login.html')
@@ -102,14 +109,22 @@ def login():
 
 # Страница выхода
 def logout():
+    """
+    Выход пользователя (закрытие активной сессии)
+    :return:
+    """
     session.pop('username', None)  # Удаляем данные пользователя из сессии
     flash("Вы успешно вышли из системы.", "success")  # Добавляем flash сообщение
-    return redirect(url_for('index'))  # Перенаправляем на главную страницу
+    return index()
 
 
 
 # Загрузка данных
 def upload_data():
+    """
+    Загружает файл на сервер
+    :return:
+    """
     if 'data_file' not in request.files:
         flash("Нет файла для загрузки", "error")
         return redirect(url_for('index'))
@@ -135,14 +150,18 @@ def upload_data():
         db.session.commit()
 
         flash("Файл успешно загружен и данные сохранены!", "success")
-        return redirect(url_for('index'))  # Перенаправление на главную страницу
+        return index()
 
     flash("Неправильный формат файла. Пожалуйста, загрузите файл в формате CSV.", "error")
-    return redirect(url_for('index'))
+    return index()
 
 
 # Генерация отчета
 def generate_report():
+    """
+    Генерирует отчет по выбранному файлу
+    :return:
+    """
     if request.method == 'POST':
 
         if 'id' not in session:
@@ -186,11 +205,16 @@ def generate_report():
 
         # Сообщение об успешной генерации отчета
         flash("Отчет успешно создан и сохранен!", "success")
-        return redirect(url_for('index'))  # Перенаправление на главную страницу
+        return index()
 
 
 # Получение отчетов для определенного файла и пользователя
 def get_reports(file_id):
+    """
+    Получение всех доступных отчетов по файлу
+    :param file_id:
+    :return:
+    """
     if 'id' not in session:
         return redirect(url_for('login'))
 
@@ -213,6 +237,11 @@ def get_reports(file_id):
 
 # загрузка отчета
 def download_report(report_id):
+    """
+    Скачивание отчета из базы
+    :param report_id:
+    :return:
+    """
     # Получаем отчет из базы данных
     report = OptimizationReport.query.get(report_id)
 
@@ -225,14 +254,19 @@ def download_report(report_id):
             return send_file(file_path, as_attachment=True)  # Отправляем файл на скачивание
         else:
             flash("Файл отчета не найден!", "error")
-            return redirect(url_for('index'))
+            return index()
     else:
         flash("Отчет не найден", "error")
-        return redirect(url_for('index'))
+        return index()
 
 
 # удаление отчета из модального окна
 def delete_report(report_id):
+    """
+    Удаление выбранного отчета из базы
+    :param report_id:
+    :return:
+    """
     # Получаем отчет из базы данных
     report = OptimizationReport.query.get(report_id)
 
@@ -261,6 +295,11 @@ def delete_report(report_id):
 
 # удаление файлов
 def delete_file(file_id):
+    """
+    Удаление файла, а также всех связанных с ним отчетов из базы
+    :param file_id:
+    :return:
+    """
     # Получаем файл из базы данных
     file = DataFile.query.get(file_id)
 
