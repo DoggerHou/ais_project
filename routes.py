@@ -299,61 +299,20 @@ def generate_report():
 
 
 # Получение отчетов для определенного файла и пользователя
-def get_reports(file_id, session_id)-> dict:
-    """
-    Получение всех отчётов для указанного файла.
-    ---
-    tags:
-      - Reports
-    summary: Список отчётов по файлу
-    parameters:
-      - name: file_id
-        in: path
-        type: integer
-        required: true
-        description: ID файла, для которого запрашиваются отчёты.
-    responses:
-      200:
-        description: Успешный запрос. Возвращает список отчётов.
-        schema:
-          type: object
-          properties:
-            reports:
-              type: array
-              items:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                    example: 1
-                  created_at:
-                    type: string
-                    example: "01 January 2023, 14:30"
-                  max_inventory:
-                    type: number
-                    format: float
-                    example: 150.5
-                  total_cost:
-                    type: number
-                    format: float
-                    example: 5000.0
-                  report_file_path:
-                    type: string
-                    example: "/reports/user1_report_2023.csv"
-      401:
-        description: Пользователь не авторизован (редирект на /login).
-      404:
-        description: Файл не найден или нет доступа.
-    security:
-      - cookieAuth: []
-    """
-    if file_id not in session:
-        return {'success': False}
+def get_reports():
+    # Извлекаем параметры из query строки
+    file_id = request.args.get('file_id')  # Получаем file_id из query параметра
+    session_id = request.args.get('session_id')  # Получаем session_id из query параметра
 
-    #user_id = session['id']  # Извлекаем user_id из сессии
-    user_id = session_id
+    print(file_id, session_id)  # Это для отладки, чтобы увидеть, что передается в запросе
 
-    # Извлекаем все отчеты для данного файла+пользователя
+    if not file_id or not session_id:
+        return jsonify({"error": "Missing parameters"}), 400  # Проверяем, есть ли необходимые параметры
+
+    # Продолжим с использованием session_id вместо session['id']
+    user_id = session_id  # Ставим user_id как session_id из запроса
+
+    # Извлекаем все отчеты для данного файла и пользователя
     reports = OptimizationReport.query.filter_by(user_id=user_id, file_id=file_id).all()
 
     # Формируем список отчетов для отправки в клиент
@@ -364,6 +323,7 @@ def get_reports(file_id, session_id)-> dict:
         "total_cost": report.total_cost,
         "report_file_path": report.report_file_path,
     } for report in reports]
+
     # Возвращаем данные в формате JSON
     return jsonify({"reports": reports_data})
 

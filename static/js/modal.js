@@ -40,6 +40,8 @@ document.querySelector('.modal-content form').addEventListener('submit', functio
 // Открытие модального окна для выбранного набора данных
 function openModal(fileId, file_name, session_id) {
     // Заполняем скрытое поле file_id значением выбранного файла
+
+
     document.getElementById('file_id').value = fileId;
     // Открываем модальное окно
     const modal = document.getElementById('reportsModal');
@@ -53,16 +55,23 @@ function openModal(fileId, file_name, session_id) {
     fetchReports(fileId, session_id);
 }
 
-// Вывод отчетов в модальном окне
-function fetchReports(fileId) {
-    fetch(`/get_reports/${fileId, session_id}`)
+// Функция для получения отчетов с сервера
+function fetchReports(fileId, session_id) {
+    console.log('Запрос к серверу с fileId:', fileId, 'и session_id:', session_id);
+
+
+    // Запрос к серверу с правильными параметрами
+    fetch(`/get_reports?file_id=${fileId}&session_id=${session_id}`)
         .then(response => response.json())
         .then(data => {
-            const reportsList = document.getElementById('reportsList');
-            reportsList.innerHTML = ''; // Очистить таблицу перед добавлением данных
+            // Обработка данных после получения
+            console.log('Данные отчета:', data);
 
-            // Добавляем отчеты в таблицу
-            if (data.reports.length > 0) {
+            // Пример: обновление UI с отчетами
+            const reportsList = document.getElementById('reportsList');
+            reportsList.innerHTML = ''; // Очищаем список перед добавлением новых данных
+
+            if (data.reports && data.reports.length > 0) {
                 data.reports.forEach(report => {
                     const row = document.createElement('tr');
                     row.innerHTML = `

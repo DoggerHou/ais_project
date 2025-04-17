@@ -31,8 +31,8 @@ app.add_url_rule('/logout', 'logout', logout)
 # маршруты для загрузки данных и отчетов
 app.add_url_rule('/upload_data', 'upload_data', upload_data, methods=['POST'])
 app.add_url_rule('/generate_report', 'generate_report', generate_report, methods=['POST'])
-app.add_url_rule('/get_reports/<int:file_id>', 'get_reports', get_reports)
-app.add_url_rule('/download_report/<int:report_id>', 'download_report', download_report)
+app.add_url_rule('/get_reports', 'get_reports', get_reports, methods=['GET'])
+app.add_url_rule('/download_report/<int:report_id>', 'download_report', download_report, methods=['POST'])
 app.add_url_rule('/delete_report/<int:report_id>', 'delete_report', delete_report, methods=['DELETE'])
 app.add_url_rule('/delete_file/<int:file_id>', 'delete_file', delete_file, methods=['DELETE'])
 
