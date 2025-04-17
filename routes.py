@@ -107,13 +107,55 @@ def logout():
 
 
 
-# Загрузка данных
+# Загружает файл на сервер
 def upload_data():
     """
-    Загружает файл на сервер
-    :return:
-    """
-    print('aaaaaaaaaaaaaaaaaaaa')
+       Загружает файл на сервер.
+       ---
+       tags:
+         - File Upload
+       summary: Загрузка файла на сервер
+       consumes:
+         - multipart/form-data
+       parameters:
+         - name: data_file
+           in: formData
+           type: file
+           required: true
+           description: Файл для загрузки.
+       responses:
+         200:
+           description: Файл успешно загружен.
+           schema:
+             type: object
+             properties:
+               success:
+                 type: boolean
+                 example: true
+               message:
+                 type: string
+                 example: "Файл успешно загружен и данные сохранены!"
+         400:
+           description: Ошибка загрузки файла. Например, файл не выбран или формат файла неверен.
+           schema:
+             type: object
+             properties:
+               success:
+                 type: boolean
+                 example: false
+               error:
+                 type: string
+                 example: "Неправильный формат файла. Пожалуйста, загрузите файл в формате CSV."
+         401:
+           description: Пользователь не авторизован (редирект на /login).
+         415:
+           description: Неверный формат файла (не поддерживаемый).
+       security:
+         - cookieAuth: []
+       """
+    if 'id' not in session:
+        return login()
+
     if 'data_file' not in request.files:
         flash("Нет файла для загрузки", "error")
         return jsonify({"error": "Нет файла для загрузки"}), 400
@@ -148,6 +190,63 @@ def upload_data():
 
 # Генерация отчета
 def generate_report():
+    """
+        Создание отчета для указанного файла.
+        ---
+        tags:
+          - Reports
+        summary: Создание отчета по данным файла
+        parameters:
+          - name: file_id
+            in: formData
+            type: integer
+            required: true
+            description: Идентификатор файла
+          - name: max_inventory
+            in: formData
+            type: integer
+            required: true
+            description: Максимальный уровень запасов.
+        responses:
+          200:
+            description: Отчет успешно создан.
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                  example: true
+                message:
+                  type: string
+                  example: "Отчет успешно создан и сохранен!"
+                report:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    created_at:
+                      type: string
+                      example: "2025-04-17T04:53:00"
+                    max_inventory:
+                      type: integer
+                      example: 500
+                    total_cost:
+                      type: number
+                      format: float
+                      example: 1500.5
+                    report_file_name:
+                      type: string
+                      example: "report_1_23_20250417_042530.csv"
+          401:
+            description: Пользователь не авторизован.
+          404:
+            description: Файл не найден.
+          500:
+            description: Ошибка при обработке данных.
+        security:
+          - cookieAuth: []
+        """
     if 'id' not in session:
         return jsonify({"error": "Не авторизован"}), 401
 
@@ -271,9 +370,35 @@ def get_reports(file_id):
 # загрузка отчета
 def download_report(report_id):
     """
-    Скачивание отчета из базы
-    :param report_id:
-    :return:
+    Скачивание отчета по идентификатору.
+    ---
+    tags:
+      - Reports
+    summary: Скачивание отчета
+    parameters:
+      - name: report_id
+        in: path
+        type: integer
+        required: true
+        description: Идентификатор отчета, который нужно скачать.
+    responses:
+      200:
+        description: Файл успешно найден и скачан.
+        schema:
+          type: string
+          format: binary
+      404:
+        description: Файл отчета не найден или отчет не существует.
+        schema:
+          type: object
+          properties:
+            error:
+              type: string
+              example: "Файл отчета не найден!"
+      401:
+        description: Пользователь не авторизован.
+    security:
+      - cookieAuth: []
     """
     # Получаем отчет из базы данных
     report = OptimizationReport.query.get(report_id)
@@ -294,10 +419,55 @@ def download_report(report_id):
 
 # удаление отчета из модального окна
 def delete_report(report_id):
+    # Удаление отчета по идентификатору
     """
-    Удаление выбранного отчета из базы
-    :param report_id:
-    :return:
+    Удаляет отчет по идентификатору.
+    ---
+    tags:
+      - Reports
+    summary: Удаление отчета
+    parameters:
+      - name: report_id
+        in: path
+        type: integer
+        required: true
+        description: Идентификатор отчета, который нужно удалить.
+    responses:
+      200:
+        description: Отчет успешно удален.
+        schema:
+          type: object
+          properties:
+            success:
+              type: boolean
+              example: true
+            file_id:
+              type: integer
+              example: 123
+      404:
+        description: Отчет не найден.
+        schema:
+          type: object
+          properties:
+            success:
+              type: boolean
+              example: false
+            error:
+              type: string
+              example: "Отчет не найден"
+      500:
+        description: Ошибка при удалении отчета (например, ошибка удаления файла).
+        schema:
+          type: object
+          properties:
+            success:
+              type: boolean
+              example: false
+            error:
+              type: string
+              example: "Ошибка при удалении отчета"
+    security:
+      - cookieAuth: []
     """
     # Получаем отчет из базы данных
     report = OptimizationReport.query.get(report_id)
@@ -328,10 +498,52 @@ def delete_report(report_id):
 # удаление файлов
 def delete_file(file_id):
     """
-    Удаление файла, а также всех связанных с ним отчетов из базы
-    :param file_id:
-    :return:
+    Удаляет файл и все отчеты, связанные с этим файлом.
+    ---
+    tags:
+      - Files
+    summary: Удаление файла и его отчетов
+    parameters:
+      - name: file_id
+        in: path
+        type: integer
+        required: true
+        description: Идентификатор файла, который нужно удалить, включая все связанные с ним отчеты.
+    responses:
+      200:
+        description: Файл и все связанные отчеты успешно удалены.
+        schema:
+          type: object
+          properties:
+            success:
+              type: boolean
+              example: true
+      404:
+        description: Файл не найден.
+        schema:
+          type: object
+          properties:
+            success:
+              type: boolean
+              example: false
+            error:
+              type: string
+              example: "Файл не найден"
+      500:
+        description: Ошибка при удалении файла или отчетов.
+        schema:
+          type: object
+          properties:
+            success:
+              type: boolean
+              example: false
+            error:
+              type: string
+              example: "Ошибка в удалении файлов"
+    security:
+      - cookieAuth: []
     """
+
     # Получаем файл из базы данных
     file = DataFile.query.get(file_id)
 
