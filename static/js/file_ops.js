@@ -82,3 +82,42 @@ function deleteFile(fileId, fileName) {
 function cancelDelete() {
     document.body.removeChild(document.querySelector('.confirm-dialog')); // Убираем диалог
 }
+
+
+// Обработчик отправки формы для загрузки файла
+document.querySelector('form').addEventListener('submit', function(event) {
+    event.preventDefault();  // Останавливаем стандартное поведение формы
+
+    const formData = new FormData(this);
+    const uploadButton = document.querySelector('button'); // Кнопка загрузки файла
+
+    // Отключаем кнопку загрузки, чтобы предотвратить повторную отправку
+    uploadButton.disabled = true;
+
+    // Отправка данных с использованием fetch
+    fetch('/upload_data', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Перезагружаем страницу после того, как данные отправлены
+        // Сообщения будут отрендерены с использованием Flask flash
+        window.location.reload();
+    })
+    .catch(error => {
+        console.error('Ошибка при загрузке:', error);
+
+        // Если произошла ошибка, перезагружаем страницу, чтобы показать стандартные сообщения Flask
+        window.location.reload();
+    })
+    .finally(() => {
+        uploadButton.disabled = false;  // Включаем кнопку снова
+    });
+});
+
+
+
+
+
+

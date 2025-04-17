@@ -113,15 +113,16 @@ def upload_data():
     Загружает файл на сервер
     :return:
     """
+    print('aaaaaaaaaaaaaaaaaaaa')
     if 'data_file' not in request.files:
         flash("Нет файла для загрузки", "error")
-        return redirect(url_for('index'))
+        return jsonify({"error": "Нет файла для загрузки"}), 400
 
     file = request.files['data_file']
 
     if file.filename == '':
         flash("Нет выбранного файла", "error")
-        return redirect(url_for('index'))
+        return jsonify({"error": "Нет выбранного файла"}), 400
 
     if file and allowed_file(file.filename):
         user_id = session['id']
@@ -136,12 +137,13 @@ def upload_data():
         new_file = DataFile(user_id=user_id, file_name=filename, file_path=file_path)
         db.session.add(new_file)
         db.session.commit()
-
-        flash("Файл успешно загружен и данные сохранены!", "success")
-        return index()
-
-    flash("Неправильный формат файла. Пожалуйста, загрузите файл в формате CSV.", "error")
-    return index()
+        flash("Файл успешно загружен!", "success")
+        return jsonify({
+            "success": True,
+            "message": "Файл успешно загружен и данные сохранены!",
+        })
+    flash("Неправильный формат файла", "error")
+    return jsonify({"success": False, "error": "Неправильный формат файла. Пожалуйста, загрузите файл в формате CSV."}), 400
 
 
 # Генерация отчета
@@ -251,7 +253,7 @@ def get_reports(file_id):
 
     user_id = session['id']  # Извлекаем user_id из сессии
 
-    # Извлекаем все отчеты для данного файла и пользователя
+    # Извлекаем все отчеты для данного файла+пользователя
     reports = OptimizationReport.query.filter_by(user_id=user_id, file_id=file_id).all()
 
     # Формируем список отчетов для отправки в клиент
@@ -275,7 +277,6 @@ def download_report(report_id):
     """
     # Получаем отчет из базы данных
     report = OptimizationReport.query.get(report_id)
-
     if report:
         # Путь к файлу отчета
         file_path = report.report_file_path
@@ -349,7 +350,8 @@ def delete_file(file_id):
         # Удаляем файл из базы данных
         db.session.delete(file)
         db.session.commit()
-
+        flash("Все файлы удалены!", "success")
         return jsonify({"success": True}), 200
     else:
+        flash("Ошибка в удалении файлов!", "error")
         return jsonify({"success": False, "error": "Файл не найден"}), 404

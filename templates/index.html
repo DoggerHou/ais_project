@@ -49,6 +49,8 @@
           {% endif %}
         {% endwith %}
 
+
+
         <!-- Форма для загрузки файла -->
         <h3>Загрузите данные о товарах (CSV файл):</h3>
         <form action="{{ url_for('upload_data') }}" method="POST" enctype="multipart/form-data">
