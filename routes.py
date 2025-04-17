@@ -259,7 +259,6 @@ def generate_report():
     # Получаем данные из формы
     file_id = request.form['file_id']  # Идентификатор файла
     max_inventory = int(request.form['max_inventory'])  # Максимальный уровень запасов
-    user_id = session['id']  # Получаем ID текущего пользователя из сессии
 
     # Получаем файл из базы данных
     file = DataFile.query.get(file_id)
