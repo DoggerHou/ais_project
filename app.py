@@ -3,17 +3,27 @@ from database import db
 import os
 from routes import index, register, login, about, team, logout, upload_data, generate_report, get_reports, download_report, delete_report, delete_file
 from flasgger import Swagger
+from flask_session import Session
+import redis
 
 app = Flask(__name__)
 swagger = Swagger(app)
 
 # Конфигурация базы данных
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///project_db.sqlite'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///project_db.sqlite'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://maloznaal:Armagedon22@localhost:3306/test1'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.urandom(24)  # Генерируем случайный секретный ключ для приложения
+app.config['SESSION_TYPE'] = 'redis'
+app.config['SESSION_PERMANENT'] = False
+app.config['SESSION_USE_SIGNER'] = True  # Для дополнительной безопасности
+app.config['SESSION_REDIS'] = redis.StrictRedis(host='localhost', port=6379, db=0)
+
 app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'upload_data')  # Путь к папке с отчетами
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # Ограничение на размер загружаемого файла
+
 db.init_app(app)
+Session(app)
 
 # Создание таблиц (если они ещё не существуют)
 with app.app_context():

@@ -250,7 +250,7 @@ def generate_report():
     if 'id' not in session:
         return jsonify({"error": "Не авторизован"}), 401
 
-        # Получаем данные из формы
+    # Получаем данные из формы
     file_id = request.form['file_id']  # Идентификатор файла
     max_inventory = int(request.form['max_inventory'])  # Максимальный уровень запасов
     user_id = session['id']  # Получаем ID текущего пользователя из сессии
@@ -301,6 +301,7 @@ def generate_report():
 # Получение отчетов для определенного файла и пользователя
 def get_reports():
     # Извлекаем параметры из query строки
+    print('getting reports')
     file_id = request.args.get('file_id')  # Получаем file_id из query параметра
     session_id = request.args.get('session_id')  # Получаем session_id из query параметра
 
