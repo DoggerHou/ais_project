@@ -153,8 +153,11 @@ def upload_data():
        security:
          - cookieAuth: []
        """
-    if 'id' not in session:
-        return login()
+    # Эмулируем ID сессии, если его нет в сессии
+    user_id = session.get('id') or request.cookies.get('user_id')
+
+    if not user_id:
+        return jsonify({"error": "Необходима авторизация"}), 401
 
     if 'data_file' not in request.files:
         flash("Нет файла для загрузки", "error")
@@ -167,7 +170,6 @@ def upload_data():
         return jsonify({"error": "Нет выбранного файла"}), 400
 
     if file and allowed_file(file.filename):
-        user_id = session['id']
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')  # Получаем текущую дату и время
         filename = f"{user_id}_{timestamp}.csv"
         file_path = os.path.join(UPLOAD_FOLDER, filename)
@@ -184,8 +186,10 @@ def upload_data():
             "success": True,
             "message": "Файл успешно загружен и данные сохранены!",
         })
+
     flash("Неправильный формат файла", "error")
-    return jsonify({"success": False, "error": "Неправильный формат файла. Пожалуйста, загрузите файл в формате CSV."}), 400
+    return jsonify(
+        {"success": False, "error": "Неправильный формат файла. Пожалуйста, загрузите файл в формате CSV."}), 400
 
 
 # Генерация отчета
