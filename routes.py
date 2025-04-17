@@ -292,7 +292,7 @@ def generate_report():
 
     return jsonify({
         "success": True,
-        "message": "Отчет успешно создан и сохранен!",
+        "message": "Отчет успешно создан и сохранен!!",
         "report": {
             "id": new_report.id,
             "created_at": new_report.created_at,
