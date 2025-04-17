@@ -14,8 +14,10 @@ function downloadReport(reportId) {
     })
     .catch(error => {
         console.error('Ошибка при скачивании отчета:', error);
+        alert('Произошла ошибка при скачивании отчета');
     });
 }
+
 
 
 // Функция для удаления отчета
@@ -64,7 +66,6 @@ function deleteFile(fileId, fileName) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert(`Файл ${fileName} и все связанные отчеты успешно удалены!`);
             location.reload(); // Перезагружаем страницу для обновления списка
         } else {
             alert('Ошибка при удалении файла');

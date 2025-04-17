@@ -286,10 +286,10 @@ def download_report(report_id):
             return send_file(file_path, as_attachment=True)  # Отправляем файл на скачивание
         else:
             flash("Файл отчета не найден!", "error")
-            return index()
+            return jsonify({"error": "Файл отчета не найден!"}), 404
     else:
         flash("Отчет не найден", "error")
-        return index()
+        return jsonify({"error": "Файл отчета не найден!"}), 404
 
 
 # удаление отчета из модального окна
