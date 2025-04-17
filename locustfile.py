@@ -21,7 +21,7 @@ class ApiTestUser(HttpUser):
 """
 class FileUploadUser(HttpUser):
     # Определите паузу между запросами
-    wait_time = between(1, 2)
+    wait_time = between(1, 5)
     # Замените на URL вашего сервера
     upload_url = "/upload_data"
 
@@ -52,7 +52,7 @@ class FileUploadUser(HttpUser):
 
 class ReportGenerationUser(HttpUser):
     # Определите паузу между запросами
-    wait_time = between(1, 2)
+    wait_time = between(1, 5)
 
     # Замените на URL вашего сервера
     generate_report_url = "/generate_report"
@@ -74,6 +74,6 @@ class ReportGenerationUser(HttpUser):
 
         # Проверка, что отчет был успешно создан
         if response.status_code == 200:
-            print("Отчет успешно создан!")
-        else:
+            print("Отчет успешно создан!", response.json())
+        elif response:
             print("Ошибка создания отчета:", response.json())

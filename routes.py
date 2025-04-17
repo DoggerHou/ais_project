@@ -300,7 +300,7 @@ def generate_report():
             "total_cost": new_report.total_cost,
             "report_file_name": new_report.report_file_name,
         }
-    })
+    }), 200
 
 
 # Получение отчетов для определенного файла и пользователя
