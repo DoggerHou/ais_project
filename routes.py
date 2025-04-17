@@ -44,10 +44,6 @@ def team():
 
 # Страница регистрации
 def register():
-    """
-    Регистрация пользователя
-    :return:
-    """
     if request.method == 'POST':
         username = request.form['username']
         email = request.form['email']
@@ -79,10 +75,6 @@ def register():
 
 # Страница авторизации
 def login():
-    """
-    Авторизация пользователя
-    :return:
-    """
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -109,10 +101,6 @@ def login():
 
 # Страница выхода
 def logout():
-    """
-    Выход пользователя (закрытие активной сессии)
-    :return:
-    """
     session.pop('username', None)  # Удаляем данные пользователя из сессии
     flash("Вы успешно вышли из системы.", "success")  # Добавляем flash сообщение
     return index()
@@ -158,10 +146,6 @@ def upload_data():
 
 # Генерация отчета
 def generate_report():
-    """
-    Генерирует отчет по выбранному файлу
-    :return:
-    """
     if request.method == 'POST':
 
         if 'id' not in session:
@@ -211,9 +195,51 @@ def generate_report():
 # Получение отчетов для определенного файла и пользователя
 def get_reports(file_id):
     """
-    Получение всех доступных отчетов по файлу
-    :param file_id:
-    :return:
+    Получение всех отчётов для указанного файла.
+    ---
+    tags:
+      - Reports
+    summary: Список отчётов по файлу
+    parameters:
+      - name: file_id
+        in: path
+        type: integer
+        required: true
+        description: ID файла, для которого запрашиваются отчёты.
+    responses:
+      200:
+        description: Успешный запрос. Возвращает список отчётов.
+        schema:
+          type: object
+          properties:
+            reports:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  created_at:
+                    type: string
+                    example: "01 January 2023, 14:30"
+                  max_inventory:
+                    type: number
+                    format: float
+                    example: 150.5
+                  total_cost:
+                    type: number
+                    format: float
+                    example: 5000.0
+                  report_file_path:
+                    type: string
+                    example: "/reports/user1_report_2023.csv"
+      401:
+        description: Пользователь не авторизован (редирект на /login).
+      404:
+        description: Файл не найден или нет доступа.
+    security:
+      - cookieAuth: []
     """
     if 'id' not in session:
         return redirect(url_for('login'))
