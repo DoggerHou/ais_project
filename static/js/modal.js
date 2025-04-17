@@ -38,7 +38,7 @@ document.querySelector('.modal-content form').addEventListener('submit', functio
 });
 
 // Открытие модального окна для выбранного набора данных
-function openModal(fileId, file_name) {
+function openModal(fileId, file_name, session_id) {
     // Заполняем скрытое поле file_id значением выбранного файла
     document.getElementById('file_id').value = fileId;
     // Открываем модальное окно
@@ -50,12 +50,12 @@ function openModal(fileId, file_name) {
     header.innerText = `Создание отчета для набора данных: ${file_name}`;
 
     // Загружаем отчеты из базы данных для этого файла
-    fetchReports(fileId);
+    fetchReports(fileId, session_id);
 }
 
 // Вывод отчетов в модальном окне
 function fetchReports(fileId) {
-    fetch(`/get_reports/${fileId}`)
+    fetch(`/get_reports/${fileId, session_id}`)
         .then(response => response.json())
         .then(data => {
             const reportsList = document.getElementById('reportsList');

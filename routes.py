@@ -299,7 +299,7 @@ def generate_report():
 
 
 # Получение отчетов для определенного файла и пользователя
-def get_reports(file_id):
+def get_reports(file_id, session_id)-> dict:
     """
     Получение всех отчётов для указанного файла.
     ---
@@ -347,10 +347,11 @@ def get_reports(file_id):
     security:
       - cookieAuth: []
     """
-    if 'id' not in session:
-        return redirect(url_for('login'))
+    if file_id not in session:
+        return {'success': False}
 
-    user_id = session['id']  # Извлекаем user_id из сессии
+    #user_id = session['id']  # Извлекаем user_id из сессии
+    user_id = session_id
 
     # Извлекаем все отчеты для данного файла+пользователя
     reports = OptimizationReport.query.filter_by(user_id=user_id, file_id=file_id).all()

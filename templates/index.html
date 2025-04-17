@@ -63,7 +63,7 @@
         <h3>Ваши загруженные наборы данных:</h3>
         <div class="file-cards">
             {% for file in data_files %}
-            <div class="file-card" onclick="openModal({{ file.id }}, '{{ file.file_name }}')">
+            <div class="file-card" onclick="openModal({{ file.id }}, '{{ file.file_name }}', '{{ session.id }}')">
                 <h4>{{ file.file_name }}</h4>
                 <p class="date">{{ file.created_at.strftime('%d %B %Y, %H:%M') }}</p>
                 <button class="delete-report-btn" onclick="confirmDelete({{ file.id }}, '{{ file.file_name }}')">Удалить файл</button>
