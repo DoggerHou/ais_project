@@ -146,50 +146,55 @@ def upload_data():
 
 # Генерация отчета
 def generate_report():
-    if request.method == 'POST':
-
-        if 'id' not in session:
-            return redirect(url_for('login'))
+    if 'id' not in session:
+        return jsonify({"error": "Не авторизован"}), 401
 
         # Получаем данные из формы
-        file_id = request.form['file_id']  # Идентификатор файла
-        max_inventory = int(request.form['max_inventory'])  # Максимальный уровень запасов
-        user_id = session['id']  # Получаем ID текущего пользователя из сессии
+    file_id = request.form['file_id']  # Идентификатор файла
+    max_inventory = int(request.form['max_inventory'])  # Максимальный уровень запасов
+    user_id = session['id']  # Получаем ID текущего пользователя из сессии
 
-        # Получаем файл из базы данных
-        file = DataFile.query.get(file_id)
-        if not file:
-            flash("Файл не найден!", "error")
-            return redirect(url_for('index'))
+    # Получаем файл из базы данных
+    file = DataFile.query.get(file_id)
+    if not file:
+        return jsonify({"error": "Файл не найден"}), 404
 
-        # Путь для сохранения отчета
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')  # Генерация уникального имени для файла
-        report_file_name = f"report_{user_id}_{file_id}_{timestamp}.csv"
-        report_file_path = os.path.join(REPORT_FOLDER, report_file_name)
+    # Путь для сохранения отчета
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')  # Генерация уникального имени для файла
+    report_file_name = f"report_{user_id}_{file_id}_{timestamp}.csv"
+    report_file_path = os.path.join(REPORT_FOLDER, report_file_name)
 
-        # Обработка
-        print('Обработка началась')
-        data, total_cost  = X(file.file_path, max_inventory)
-        print('Обработка закончилась')
+    # Обработка
+    print('Обработка началась')
+    data, total_cost = X(file.file_path, max_inventory)
+    print('Обработка закончилась')
 
-        # Запись в csv
-        data.to_csv(report_file_path, index=False, sep=",")
+    # Запись в csv
+    data.to_csv(report_file_path, index=False, sep=",")
 
-        # Сохраняем информацию о созданном отчете в базе данных
-        new_report = OptimizationReport(
-            user_id=user_id,
-            file_id=file_id,
-            max_inventory=max_inventory,
-            total_cost=total_cost,  # Суммарная стоимость
-            report_file_name=report_file_name,
-            report_file_path=report_file_path,
-        )
-        db.session.add(new_report)
-        db.session.commit()
+    # Сохраняем информацию о созданном отчете в базе данных
+    new_report = OptimizationReport(
+        user_id=user_id,
+        file_id=file_id,
+        max_inventory=max_inventory,
+        total_cost=total_cost,  # Суммарная стоимость
+        report_file_name=report_file_name,
+        report_file_path=report_file_path,
+    )
+    db.session.add(new_report)
+    db.session.commit()
 
-        # Сообщение об успешной генерации отчета
-        flash("Отчет успешно создан и сохранен!", "success")
-        return index()
+    return jsonify({
+        "success": True,
+        "message": "Отчет успешно создан и сохранен!",
+        "report": {
+            "id": new_report.id,
+            "created_at": new_report.created_at,
+            "max_inventory": new_report.max_inventory,
+            "total_cost": new_report.total_cost,
+            "report_file_name": new_report.report_file_name,
+        }
+    })
 
 
 # Получение отчетов для определенного файла и пользователя

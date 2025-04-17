@@ -1,3 +1,42 @@
+// Отправка формы для генерации отчета
+document.querySelector('.modal-content form').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const formData = new FormData(this);
+    const loadingNotification = document.getElementById('loadingNotification');
+    const submitButton = document.querySelector('.modal-header button');  // Кнопка отправки формы
+
+    // Показываем уведомление, что отчет создается + отключаем кнопку
+    loadingNotification.style.display = 'block';
+    submitButton.disabled = true;  // Отключаем кнопку на время
+
+
+    fetch('/generate_report', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            // Закрыть модальное окно после успешного создания отчета
+            document.getElementById('reportsModal').style.display = 'none';
+            // Перезагрузить список отчетов в модальном окне с актуальными данными
+            fetchReports(formData.get('file_id')); // передаем file_id, которое было в форме
+        } else {
+            alert('Ошибка: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Ошибка при отправке запроса:', error);
+    })
+    .finally(() => {
+        // Скрываем уведомление и восстанавливаем кнопку после завершения запроса
+        loadingNotification.style.display = 'none';
+        submitButton.disabled = false;  // Включаем кнопку снова
+    });
+});
+
 // Открытие модального окна для выбранного набора данных
 function openModal(fileId, file_name) {
     // Заполняем скрытое поле file_id значением выбранного файла
@@ -22,7 +61,6 @@ function fetchReports(fileId) {
             const reportsList = document.getElementById('reportsList');
             reportsList.innerHTML = ''; // Очистить таблицу перед добавлением данных
 
-
             // Добавляем отчеты в таблицу
             if (data.reports.length > 0) {
                 data.reports.forEach(report => {
@@ -33,7 +71,6 @@ function fetchReports(fileId) {
                         <td>${report.total_cost}</td>
                         <td><button class="delete-btn" onclick='deleteReport(${report.id})'>Удалить</button></td>
                         <td><button class="download-btn" onclick='downloadReport(${report.id})'>Скачать</button></td>
-
                     `;
                     reportsList.appendChild(row);
                 });
@@ -47,7 +84,6 @@ function fetchReports(fileId) {
             console.error('Ошибка при загрузке отчетов:', error);
         });
 }
-
 
 // Закрытие модального окна
 document.querySelector('.reports-modal').addEventListener('click', function (e) {
