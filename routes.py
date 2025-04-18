@@ -305,6 +305,59 @@ def generate_report():
 
 # Получение отчетов для определенного файла и пользователя
 def get_reports():
+    """
+        Получение отчетов для определенного файла и пользователя.
+        ---
+        tags:
+          - Reports
+        summary: Получение отчетов по указанному файлу и пользователю
+        parameters:
+          - name: file_id
+            in: query
+            type: integer
+            required: true
+            description: Идентификатор файла, для которого нужно получить отчеты.
+          - name: session_id
+            in: query
+            type: string
+            required: true
+            description: Идентификатор сессии пользователя, для которого нужно получить отчеты.
+        responses:
+          200:
+            description: Список отчетов для указанного файла и пользователя
+            schema:
+              type: object
+              properties:
+                reports:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      created_at:
+                        type: string
+                        example: "17 April 2025, 04:53"
+                      max_inventory:
+                        type: integer
+                        example: 500
+                      total_cost:
+                        type: number
+                        format: float
+                        example: 1500.5
+                      report_file_path:
+                        type: string
+                        example: "/path/to/report_1_23_20250417_042530.csv"
+          400:
+            description: Отсутствуют обязательные параметры (file_id или session_id)
+          404:
+            description: Файлы для указанного пользователя и файла не найдены
+          500:
+            description: Внутренняя ошибка при обработке запроса
+        security:
+          - cookieAuth: []
+    """
     # Извлекаем параметры из query строки
     print('getting reports')
     file_id = request.args.get('file_id')  # Получаем file_id из query параметра
