@@ -2,10 +2,9 @@ from locust import HttpUser, task, between
 import os
 import random
 
-"""
+
 class GetHTMLUser(HttpUser):
     wait_time = between(1, 5)
-
 
     @task
     def get_team(self):
@@ -15,13 +14,11 @@ class GetHTMLUser(HttpUser):
     @task
     def get_generate_report(self):
         self.client.get("/get_reports?file_id=1&session_id=1")
-"""
+
 
 
 class FileUploadUser(HttpUser):
-    # Определите паузу между запросами
     wait_time = between(1, 5)
-    # Замените на URL вашего сервера
     upload_url = "/upload_data"
 
     @task
@@ -29,18 +26,12 @@ class FileUploadUser(HttpUser):
         # Путь к файлу
         file_path = "my_data.csv"
 
-        cookies = {
-            'user_id': str(1)  # Добавляем user_id в cookies
-        }
-
         # Открываем реальный файл для отправки
         with open(file_path, 'rb') as f:
-            files = {
-                'data_file': (os.path.basename(file_path), f, 'text/csv')
-            }
+            files = { 'data_file': (os.path.basename(file_path), f, 'text/csv')}
 
             # Отправляем файл с POST запросом
-            response = self.client.post(self.upload_url, files=files, cookies=cookies)
+            response = self.client.post(self.upload_url, files=files, cookies={ 'user_id': str(1)})
 
             # Проверка, что файл загружен успешно
             if response.status_code == 200:
@@ -50,11 +41,11 @@ class FileUploadUser(HttpUser):
 
 
 
-"""
+
 class ReportGenerationUser(HttpUser):
     wait_time = between(1, 1.1)
-
     generate_report_url = "/generate_report"
+
     @task
     def generate_report(self):
         # Данные для формы
@@ -63,17 +54,11 @@ class ReportGenerationUser(HttpUser):
             'max_inventory': 480 
         }
 
-        # имитируем авторизацию пользователя
-        cookies = {
-            'user_id': str(2)
-        }
-
         # Отправляем POST запрос
-        response = self.client.post(self.generate_report_url, data=form_data, cookies=cookies)
+        response = self.client.post(self.generate_report_url, data=form_data, cookies={'user_id': str(2)})
 
         # Проверка
         if response.status_code == 200:
             print("Отчет успешно создан!", response.json())
         else:
             print("Ошибка создания отчета:", response.json())
-"""
