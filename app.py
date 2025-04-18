@@ -23,7 +23,7 @@ app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'upload_data')  # Пут
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # Ограничение на размер загружаемого файла
 
 db.init_app(app)
-Session(app)
+#Session(app)
 
 # Создание таблиц (если они ещё не существуют)
 with app.app_context():
