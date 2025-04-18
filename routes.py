@@ -185,7 +185,7 @@ def upload_data():
         return jsonify({
             "success": True,
             "message": "Файл успешно загружен и данные сохранены!",
-        })
+        }), 200
 
     flash("Неправильный формат файла", "error")
     return jsonify(
@@ -331,7 +331,7 @@ def get_reports():
     } for report in reports]
 
     # Возвращаем данные в формате JSON
-    return jsonify({"reports": reports_data})
+    return jsonify({"reports": reports_data}), 200
 
 
 # загрузка отчета
@@ -423,7 +423,7 @@ def delete_report(report_id):
               type: string
               example: "Отчет не найден"
       500:
-        description: Ошибка при удалении отчета (например, ошибка удаления файла).
+        description: Ошибка базы данных.
         schema:
           type: object
           properties:
@@ -455,7 +455,7 @@ def delete_report(report_id):
 
         except Exception as e:
             db.session.rollback()  # Откатываем транзакцию в случае ошибки
-            flash("Ошибка при удалении отчета", "error")
+            flash("Ошибка при удалении отчета(ошибка БД)", "error")
             return jsonify({"success": False, "error": str(e)}), 500
     else:
         flash("Отчет не найден", "error")
@@ -496,17 +496,6 @@ def delete_file(file_id):
             error:
               type: string
               example: "Файл не найден"
-      500:
-        description: Ошибка при удалении файла или отчетов.
-        schema:
-          type: object
-          properties:
-            success:
-              type: boolean
-              example: false
-            error:
-              type: string
-              example: "Ошибка в удалении файлов"
     security:
       - cookieAuth: []
     """
