@@ -172,7 +172,18 @@ pip install -r requirements.txt
 ```
 ### 3. Настройка БД
 В app.py задана строка подключения:
-```
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://user:password@localhost:3306/db_name'
+
+```app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://user:password@localhost:3306/db_name'```
+Перед запуском:  
+1. Создайте БД в MySQL / MariaDB.  
+2. Обновите логин, пароль и имя БД в URI.  
+3. При первом запуске приложение создаст таблицы через SQLAlchemy.
+
+При желании можно использовать SQLite, заменив URI, например, на:
+```app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///instance/project_db.sqlite'```
 
 
+### 4. Запуск приложения
+```python app.py```
+По умолчанию сервер доступен по адресу:
+`http://127.0.0.1:5000/`
