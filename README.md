@@ -143,7 +143,7 @@ ais_project/
 
 ### 1. Клонирование репозитория
 ```bash
-git clone https://github.com/DoggerHou/ais_project.git
+git clone https://github.com/mal0znaal/ais_project.git
 cd ais_project
 ```
 
