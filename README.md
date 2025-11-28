@@ -271,6 +271,7 @@ pip install -r requirements.txt
 - **Frontend:** Jinja2, HTML5, CSS3, JavaScript.
 - **Нагрузка:** Locust (HttpUser-сценарии для HTML и API).
 
+---
 
 ## Скриншоты
 
